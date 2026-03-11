@@ -1,4 +1,4 @@
-package com.tp.mmi.archive.controller;
+package com.tp.mmi.archive.controllers;
 
 import com.tp.mmi.archive.models.Ue;
 import com.tp.mmi.archive.services.UeService;

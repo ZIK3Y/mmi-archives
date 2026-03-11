@@ -1,4 +1,4 @@
-package com.tp.mmi.archives.service;
+package com.tp.mmi.archive.services;
 
 import com.tp.mmi.archive.models.Groupe;
 import com.tp.mmi.archive.repositories.GroupeRepository;

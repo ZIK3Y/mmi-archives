@@ -1,4 +1,4 @@
-package com.tp.mmi.archive.controller;
+package com.tp.mmi.archive.controllers;
 
 import com.tp.mmi.archive.models.Competence;
 import com.tp.mmi.archive.services.CompetenceService;

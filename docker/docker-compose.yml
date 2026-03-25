@@ -2,23 +2,26 @@ services:
 
   # ── Base de données MySQL ──────────────────────────────────────────────────
   db:
-    image: mysql:8.0
+    image: mysql:latest
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     container_name: mmi-archive-db
     restart: always
     environment:
       MYSQL_DATABASE: mmi-archive
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: mmi_user
-      MYSQL_PASSWORD: mmi_password
+      MYSQL_ROOT_PASSWORD: mmi-archive
+      MYSQL_PASSWORD: mmi-archive
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
     ports:
-      - "3307:3306"
+      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
-      interval: 10s
+      interval: 5s
+      retries: 10
       timeout: 5s
-      retries: 5
 
   # ── API Spring Boot ────────────────────────────────────────────────────────
   api:
@@ -30,13 +33,12 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/mmi-archive?createDatabaseIfNotExist=true
-      SPRING_DATASOURCE_USERNAME: mmi_user
-      SPRING_DATASOURCE_PASSWORD: mmi_password
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/mmi-archive?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+      SPRING_DATASOURCE_PASSWORD: mmi-archive
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
     depends_on:
       db:
         condition: service_healthy
 
 volumes:
-  mysql_data:
+  mysql_data: 

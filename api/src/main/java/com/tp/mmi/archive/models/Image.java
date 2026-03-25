@@ -1,5 +1,6 @@
 package com.tp.mmi.archive.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -15,6 +16,7 @@ public class Image {
 
     @ManyToOne
     @JoinColumn(name = "id_sae")
+    @JsonBackReference("sae-images")
     private Sae sae;
 
     public Image() {}

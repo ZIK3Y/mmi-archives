@@ -1,5 +1,6 @@
 package com.tp.mmi.archive.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -19,6 +20,7 @@ public class Groupe {
     private String anneePromo;
 
     @OneToMany(mappedBy = "groupe", cascade = CascadeType.ALL)
+    @JsonManagedReference("groupe-groupesaes")
     private List<GroupeSae> groupeSaes;
 
     public Groupe() {}

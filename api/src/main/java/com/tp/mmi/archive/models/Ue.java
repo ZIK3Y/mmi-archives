@@ -1,5 +1,6 @@
 package com.tp.mmi.archive.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -14,16 +15,12 @@ public class Ue {
     private String libelle;
     private int semestre;
 
+    // On ne sérialise PAS la liste des SAés depuis Ue
     @OneToMany(mappedBy = "ue", cascade = CascadeType.ALL)
+    @JsonManagedReference("ue-saes")
     private List<Sae> saes;
 
     public Ue() {}
-
-    public Ue(String codeUe, String libelle, int semestre) {
-        this.codeUe = codeUe;
-        this.libelle = libelle;
-        this.semestre = semestre;
-    }
 
     public Long getIdUe() { return idUe; }
     public void setIdUe(Long idUe) { this.idUe = idUe; }

@@ -1,5 +1,6 @@
 package com.tp.mmi.archive.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -16,7 +17,9 @@ public class Competence {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    // On ignore cette liste : on n'a jamais besoin de lister les SAés depuis une compétence
     @OneToMany(mappedBy = "competence", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<SaeCompetence> saeCompetences;
 
     public Competence() {}

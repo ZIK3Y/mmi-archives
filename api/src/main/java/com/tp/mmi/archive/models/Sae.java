@@ -1,5 +1,7 @@
 package com.tp.mmi.archive.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
@@ -23,21 +25,31 @@ public class Sae {
     private String lienSite;
     private String lienProduction;
 
+    // Sae est le côté "enfant" de Domaine → on ignore le retour vers Domaine.saes
     @ManyToOne
     @JoinColumn(name = "id_domaine")
+    @JsonBackReference("domaine-saes")
     private Domaine domaine;
 
+    // Sae est le côté "enfant" de Ue → on ignore le retour vers Ue.saes
     @ManyToOne
     @JoinColumn(name = "id_ue")
+    @JsonBackReference("ue-saes")
     private Ue ue;
 
+    // Sae "possède" ses groupeSaes → on les sérialise
     @OneToMany(mappedBy = "sae", cascade = CascadeType.ALL)
+    @JsonManagedReference("sae-groupesaes")
     private List<GroupeSae> groupeSaes;
 
+    // Sae "possède" ses saeCompetences → on les sérialise
     @OneToMany(mappedBy = "sae", cascade = CascadeType.ALL)
+    @JsonManagedReference("sae-competences")
     private List<SaeCompetence> saeCompetences;
 
+    // Sae "possède" ses images → on les sérialise
     @OneToMany(mappedBy = "sae", cascade = CascadeType.ALL)
+    @JsonManagedReference("sae-images")
     private List<Image> images;
 
     public Sae() {}

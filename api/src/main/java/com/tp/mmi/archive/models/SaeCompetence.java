@@ -1,5 +1,6 @@
 package com.tp.mmi.archive.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -9,11 +10,13 @@ public class SaeCompetence {
     @Id
     @ManyToOne
     @JoinColumn(name = "id_sae")
+    @JsonBackReference("sae-competences")
     private Sae sae;
 
     @Id
     @ManyToOne
     @JoinColumn(name = "id_competence")
+    // Competence n'a pas de relation inverse vers SaeCompetence → pas besoin d'annotation ici
     private Competence competence;
 
     public SaeCompetence() {}

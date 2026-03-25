@@ -1,5 +1,6 @@
 package com.tp.mmi.archive.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -9,11 +10,13 @@ public class GroupeSae {
     @Id
     @ManyToOne
     @JoinColumn(name = "id_groupe")
+    @JsonBackReference("groupe-groupesaes")
     private Groupe groupe;
 
     @Id
     @ManyToOne
     @JoinColumn(name = "id_sae")
+    @JsonBackReference("sae-groupesaes")
     private Sae sae;
 
     private float note;

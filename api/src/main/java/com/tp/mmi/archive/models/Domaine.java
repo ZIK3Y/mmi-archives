@@ -1,5 +1,6 @@
 package com.tp.mmi.archive.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -15,7 +16,10 @@ public class Domaine {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    // On ne sérialise PAS la liste des SAés depuis Domaine
+    // (sinon Domaine → [Sae → Domaine → ...])
     @OneToMany(mappedBy = "domaine", cascade = CascadeType.ALL)
+    @JsonManagedReference("domaine-saes")
     private List<Sae> saes;
 
     public Domaine() {}

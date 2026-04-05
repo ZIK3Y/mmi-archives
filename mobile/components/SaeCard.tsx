@@ -36,9 +36,6 @@ export function SaeCard({ sae, showRank, rank }: SaeCardProps) {
     >
       <View style={styles.topRow}>
         <View style={styles.titleBlock}>
-          {showRank && rank !== undefined && (
-            <Text style={styles.rank}>{rank}.</Text>
-          )}
           <View style={{ flex: 1 }}>
             <Text style={styles.title} numberOfLines={2}>{sae.titre}</Text>
             <Text style={styles.meta}>{sae.annee} · {sae.semestre} · {sae.ue}</Text>

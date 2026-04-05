@@ -7,7 +7,6 @@ import {
   ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuth } from '@/contexts/AuthContext';
 import { Colors } from '@/constants/Colors';
 import { Feather } from '@expo/vector-icons';
 
@@ -44,7 +43,6 @@ function MenuItem({ icon, label, subtitle, onPress, accent }: MenuItemProps) {
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { isAuthenticated, user } = useAuth();
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -98,31 +96,12 @@ export default function HomeScreen() {
 
         <Text style={styles.sectionLabel}>Compte</Text>
         <View style={styles.card}>
-          {isAuthenticated ? (
-            <>
-              <MenuItem
-                icon="plus-circle"
-                label="Ajouter une SAé"
-                subtitle={`Connecté en tant que ${user?.username}`}
-                onPress={() => router.push('/ajout')}
-                accent
-              />
-              <View style={styles.separator} />
-              <MenuItem
-                icon="user"
-                label="Profil"
-                subtitle="Gérer la session"
-                onPress={() => router.push('/profil')}
-              />
-            </>
-          ) : (
-            <MenuItem
-              icon="log-in"
-              label="Se connecter"
-              subtitle="Pour ajouter des SAé"
-              onPress={() => router.push('/auth/login')}
-            />
-          )}
+          <MenuItem
+            icon="log-in"
+            label="Se connecter"
+            subtitle="Pour ajouter des SAé"
+            onPress={() => router.push('/auth/login')}
+          />
         </View>
 
       </ScrollView>

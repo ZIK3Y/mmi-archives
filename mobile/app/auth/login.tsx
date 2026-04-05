@@ -35,7 +35,7 @@ export default function LoginScreen() {
     const ok = await login(username.trim(), password);
     setLoading(false);
     if (ok) {
-      router.back();
+      router.push('/profil');
     } else {
       setError('Identifiants incorrects.');
     }

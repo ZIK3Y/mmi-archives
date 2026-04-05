@@ -15,7 +15,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 // Identifiants hardcodés (à remplacer par un vrai système d'auth)
 const VALID_USERS: Record<string, string> = {
-  admin: 'mmi2024',
+  admin: 'mmi2026',
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {

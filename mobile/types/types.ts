@@ -3,7 +3,7 @@ export interface Sae {
   titre: string;
   description: string;
   semestre: string;
-  annee: string; // MMI2 | MMI3
+  anneePromo: string; // MMI2 | MMI3
   domaine: string;
   competences: string;
   ressourcesHumaines: string;

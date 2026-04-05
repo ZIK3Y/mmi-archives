@@ -18,15 +18,15 @@ export function SaeCard({ sae, showRank, rank }: SaeCardProps) {
     sae.note >= 16
       ? Colors.success
       : sae.note >= 12
-      ? Colors.warning
-      : Colors.danger;
+        ? Colors.warning
+        : Colors.danger;
 
   const noteBg =
     sae.note >= 16
       ? Colors.successBg
       : sae.note >= 12
-      ? Colors.warningBg
-      : Colors.dangerBg;
+        ? Colors.warningBg
+        : Colors.dangerBg;
 
   return (
     <TouchableOpacity
@@ -38,7 +38,7 @@ export function SaeCard({ sae, showRank, rank }: SaeCardProps) {
         <View style={styles.titleBlock}>
           <View style={{ flex: 1 }}>
             <Text style={styles.title} numberOfLines={2}>{sae.titre}</Text>
-            <Text style={styles.meta}>{sae.annee} · {sae.semestre} · {sae.ue}</Text>
+            <Text style={styles.meta}>{sae.anneePromo} · {sae.semestre} · {sae.ue}</Text>
           </View>
         </View>
         <View style={[styles.notePill, { backgroundColor: noteBg }]}>

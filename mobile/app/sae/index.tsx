@@ -23,7 +23,7 @@ export default function SaeListScreen() {
     (s) =>
       s.titre.toLowerCase().includes(search.toLowerCase()) ||
       s.domaine.toLowerCase().includes(search.toLowerCase()) ||
-      s.annee.toLowerCase().includes(search.toLowerCase())
+      s.anneePromo.toLowerCase().includes(search.toLowerCase())
   );
 
   return (

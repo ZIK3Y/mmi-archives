@@ -12,71 +12,54 @@ import { Colors } from '@/constants/Colors';
 import { Feather } from '@expo/vector-icons';
 
 export default function ProfilScreen() {
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, logout } = useAuth();
   const router = useRouter();
 
   const handleLogout = () => {
     Alert.alert('Déconnexion', 'Confirmer la déconnexion ?', [
       { text: 'Annuler', style: 'cancel' },
-      { text: 'Déconnexion', style: 'destructive', onPress: logout },
+      { text: 'Déconnexion', style: 'destructive', onPress: logoutAndRedirect },
     ]);
   };
+
+  const logoutAndRedirect = () => {
+    logout();
+    router.push('/');
+  }
 
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
         <Text style={styles.title}>Profil</Text>
       </View>
-
-      {isAuthenticated ? (
-        <View style={styles.content}>
-          <View style={styles.avatarBox}>
-            <Feather name="user" size={32} color={Colors.textPrimary} />
-          </View>
-          <Text style={styles.username}>{user?.username}</Text>
-          <Text style={styles.role}>Administrateur</Text>
-
-          <View style={styles.divider} />
-
-          <View style={styles.card}>
-            <TouchableOpacity
-              style={styles.menuItem}
-              onPress={() => router.push('/ajout')}
-              activeOpacity={0.7}
-            >
-              <View style={styles.menuIcon}>
-                <Feather name="plus-circle" size={18} color={Colors.textPrimary} />
-              </View>
-              <Text style={styles.menuLabel}>Ajouter une SAé</Text>
-              <Feather name="chevron-right" size={16} color={Colors.textMuted} />
-            </TouchableOpacity>
-          </View>
-
-          <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout} activeOpacity={0.7}>
-            <Feather name="log-out" size={16} color={Colors.danger} />
-            <Text style={styles.logoutText}>Se déconnecter</Text>
-          </TouchableOpacity>
+      <View style={styles.content}>
+        <View style={styles.avatarBox}>
+          <Feather name="user" size={32} color={Colors.textPrimary} />
         </View>
-      ) : (
-        <View style={styles.content}>
-          <View style={styles.avatarBox}>
-            <Feather name="lock" size={32} color={Colors.textMuted} />
-          </View>
-          <Text style={styles.username}>Non connecté</Text>
-          <Text style={styles.role}>Connectez-vous pour ajouter des SAé</Text>
+        <Text style={styles.username}>{user?.username}</Text>
+        <Text style={styles.role}>Administrateur</Text>
 
-          <View style={styles.divider} />
+        <View style={styles.divider} />
 
+        <View style={styles.card}>
           <TouchableOpacity
-            style={styles.loginBtn}
-            onPress={() => router.push('/auth/login')}
+            style={styles.menuItem}
+            onPress={() => router.push('/ajout')}
             activeOpacity={0.7}
           >
-            <Feather name="log-in" size={16} color={Colors.surface} />
-            <Text style={styles.loginText}>Se connecter</Text>
+            <View style={styles.menuIcon}>
+              <Feather name="plus-circle" size={18} color={Colors.accent} />
+            </View>
+            <Text style={styles.menuLabel}>Ajouter une SAé</Text>
+            <Feather name="chevron-right" size={16} color={Colors.textMuted} />
           </TouchableOpacity>
         </View>
-      )}
+
+        <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout} activeOpacity={0.7}>
+          <Feather name="log-out" size={16} color={Colors.danger} />
+          <Text style={styles.logoutText}>Se déconnecter</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
@@ -147,7 +130,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 8,
-    backgroundColor: Colors.surfaceAlt,
+    backgroundColor: Colors.accentLight,
     alignItems: 'center',
     justifyContent: 'center',
   },

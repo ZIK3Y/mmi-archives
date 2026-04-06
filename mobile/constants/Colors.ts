@@ -1,21 +1,18 @@
 export const Colors = {
-  // Base
   background: '#F7F6F3',
   surface: '#FFFFFF',
   surfaceAlt: '#EFEDE8',
   border: '#E0DDD6',
   borderStrong: '#C8C4BC',
 
-  // Text
   textPrimary: '#1A1917',
   textSecondary: '#5C5954',
   textMuted: '#9C9892',
 
-  // Accent
-  accent: '#1A1917',
-  accentLight: '#F0EEE9',
+  accent: '#4A4E8C',
+  accentLight: '#EAEBF5',
+  accentText: '#FFFFFF',
 
-  // Status
   success: '#2D6A4F',
   successBg: '#D8F3DC',
   warning: '#B5530A',
@@ -23,7 +20,6 @@ export const Colors = {
   danger: '#9B1D20',
   dangerBg: '#FDDCDD',
 
-  // Domaines — tons naturels désaturés
   domaineWeb: '#1D4E89',
   domaineDev: '#1A5C3A',
   domaineDI: '#5C3A7C',

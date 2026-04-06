@@ -22,6 +22,7 @@ export interface Groupe {
   nomGroupe: string;
   membres: string[];
   anneePromo: string;
+  note: number;
 }
 
 export interface Image {

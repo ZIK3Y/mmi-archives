@@ -26,7 +26,7 @@ function MenuItem({ icon, label, subtitle, onPress, accent }: MenuItemProps) {
       activeOpacity={0.7}
     >
       <View style={[styles.menuIcon, accent && styles.menuIconAccent]}>
-        <Feather name={icon} size={20} color={accent ? Colors.surface : Colors.textPrimary} />
+        <Feather name={icon} size={20} color={accent ? Colors.accentText : Colors.accent} />
       </View>
       <View style={styles.menuText}>
         <Text style={[styles.menuLabel, accent && styles.menuLabelAccent]}>{label}</Text>
@@ -35,7 +35,7 @@ function MenuItem({ icon, label, subtitle, onPress, accent }: MenuItemProps) {
       <Feather
         name="chevron-right"
         size={16}
-        color={accent ? 'rgba(255,255,255,0.5)' : Colors.textMuted}
+        color={accent ? 'rgba(255,255,255,0.6)' : Colors.accent}
       />
     </TouchableOpacity>
   );
@@ -49,6 +49,7 @@ export default function HomeScreen() {
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
 
         <View style={styles.header}>
+          <View style={styles.headerAccentBar} />
           <Text style={styles.institution}>IUT MLV Meaux · BUT MMI</Text>
           <Text style={styles.title}>Archive SAé</Text>
           <Text style={styles.subtitle}>
@@ -78,20 +79,6 @@ export default function HomeScreen() {
             subtitle="Web, Développement, DI, 3D, Création…"
             onPress={() => router.push('/sae/parDomaine')}
           />
-          <View style={styles.separator} />
-          <MenuItem
-            icon="bar-chart-2"
-            label="Classement par note"
-            subtitle="SAé triées par note décroissante"
-            onPress={() => router.push('/sae/classement')}
-          />
-          <View style={styles.separator} />
-          <MenuItem
-            icon="image"
-            label="Galerie photos"
-            subtitle="Toutes les illustrations des SAé"
-            onPress={() => router.push('/sae/galerie')}
-          />
         </View>
 
         <Text style={styles.sectionLabel}>Compte</Text>
@@ -101,6 +88,7 @@ export default function HomeScreen() {
             label="Se connecter"
             subtitle="Pour ajouter des SAé"
             onPress={() => router.push('/auth/login')}
+            accent
           />
         </View>
 
@@ -118,9 +106,16 @@ const styles = StyleSheet.create({
     paddingTop: 36,
     paddingBottom: 28,
   },
+  headerAccentBar: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: Colors.accent,
+    marginBottom: 16,
+  },
   institution: {
     fontSize: 11,
-    color: Colors.textMuted,
+    color: Colors.accent,
     fontWeight: '600',
     letterSpacing: 1,
     textTransform: 'uppercase',
@@ -169,18 +164,18 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.surface,
   },
   menuItemAccent: {
-    backgroundColor: Colors.textPrimary,
+    backgroundColor: Colors.accent,
   },
   menuIcon: {
     width: 38,
     height: 38,
     borderRadius: 9,
-    backgroundColor: Colors.surfaceAlt,
+    backgroundColor: Colors.accentLight,
     alignItems: 'center',
     justifyContent: 'center',
   },
   menuIconAccent: {
-    backgroundColor: 'rgba(255,255,255,0.15)',
+    backgroundColor: 'rgba(255,255,255,0.2)',
   },
   menuText: { flex: 1 },
   menuLabel: {
@@ -189,12 +184,12 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
     marginBottom: 2,
   },
-  menuLabelAccent: { color: Colors.surface },
+  menuLabelAccent: { color: Colors.accentText },
   menuSub: {
     fontSize: 12,
     color: Colors.textMuted,
   },
-  menuSubAccent: { color: 'rgba(255,255,255,0.6)' },
+  menuSubAccent: { color: 'rgba(255,255,255,0.7)' },
 
   separator: {
     height: 1,

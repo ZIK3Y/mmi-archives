@@ -78,20 +78,6 @@ export default function HomeScreen() {
             subtitle="Web, Développement, DI, 3D, Création…"
             onPress={() => router.push('/sae/parDomaine')}
           />
-          <View style={styles.separator} />
-          <MenuItem
-            icon="bar-chart-2"
-            label="Classement par note"
-            subtitle="SAé triées par note décroissante"
-            onPress={() => router.push('/sae/classement')}
-          />
-          <View style={styles.separator} />
-          <MenuItem
-            icon="image"
-            label="Galerie photos"
-            subtitle="Toutes les illustrations des SAé"
-            onPress={() => router.push('/sae/galerie')}
-          />
         </View>
 
         <Text style={styles.sectionLabel}>Compte</Text>

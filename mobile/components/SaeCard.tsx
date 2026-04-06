@@ -1,4 +1,9 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import { Sae } from '@/types/types';
 import { Colors } from '@/constants/Colors';

@@ -37,21 +37,38 @@ public class Groupe {
     }
 
     public Long getIdGroupe() { return idGroupe; }
+
     public void setIdGroupe(Long idGroupe) { this.idGroupe = idGroupe; }
+
     public String getNomGroupe() { return nomGroupe; }
+
     public void setNomGroupe(String nomGroupe) { this.nomGroupe = nomGroupe; }
+
     public String getEtudiant1() { return etudiant1; }
+
     public void setEtudiant1(String etudiant1) { this.etudiant1 = etudiant1; }
+
     public String getEtudiant2() { return etudiant2; }
+
     public void setEtudiant2(String etudiant2) { this.etudiant2 = etudiant2; }
+
     public String getEtudiant3() { return etudiant3; }
+
     public void setEtudiant3(String etudiant3) { this.etudiant3 = etudiant3; }
+
     public String getEtudiant4() { return etudiant4; }
+
     public void setEtudiant4(String etudiant4) { this.etudiant4 = etudiant4; }
+
     public String getEtudiant5() { return etudiant5; }
+
     public void setEtudiant5(String etudiant5) { this.etudiant5 = etudiant5; }
+
     public String getAnneePromo() { return anneePromo; }
+
     public void setAnneePromo(String anneePromo) { this.anneePromo = anneePromo; }
+
     public List<GroupeSae> getGroupeSaes() { return groupeSaes; }
+    
     public void setGroupeSaes(List<GroupeSae> groupeSaes) { this.groupeSaes = groupeSaes; }
 }

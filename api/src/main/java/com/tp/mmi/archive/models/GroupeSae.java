@@ -30,9 +30,14 @@ public class GroupeSae {
     }
 
     public Groupe getGroupe() { return groupe; }
+
     public void setGroupe(Groupe groupe) { this.groupe = groupe; }
+
     public Sae getSae() { return sae; }
+
     public void setSae(Sae sae) { this.sae = sae; }
+
     public float getNote() { return note; }
+    
     public void setNote(float note) { this.note = note; }
 }

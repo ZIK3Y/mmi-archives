@@ -25,29 +25,24 @@ public class Sae {
     private String lienSite;
     private String lienProduction;
 
-    // Sae est le côté "enfant" de Domaine → on ignore le retour vers Domaine.saes
     @ManyToOne
     @JoinColumn(name = "id_domaine")
     @JsonBackReference("domaine-saes")
     private Domaine domaine;
 
-    // Sae est le côté "enfant" de Ue → on ignore le retour vers Ue.saes
     @ManyToOne
     @JoinColumn(name = "id_ue")
     @JsonBackReference("ue-saes")
     private Ue ue;
 
-    // Sae "possède" ses groupeSaes → on les sérialise
     @OneToMany(mappedBy = "sae", cascade = CascadeType.ALL)
     @JsonManagedReference("sae-groupesaes")
     private List<GroupeSae> groupeSaes;
 
-    // Sae "possède" ses saeCompetences → on les sérialise
     @OneToMany(mappedBy = "sae", cascade = CascadeType.ALL)
     @JsonManagedReference("sae-competences")
     private List<SaeCompetence> saeCompetences;
 
-    // Sae "possède" ses images → on les sérialise
     @OneToMany(mappedBy = "sae", cascade = CascadeType.ALL)
     @JsonManagedReference("sae-images")
     private List<Image> images;
@@ -70,31 +65,58 @@ public class Sae {
     }
 
     public Long getIdSae() { return idSae; }
+
     public void setIdSae(Long idSae) { this.idSae = idSae; }
+
     public String getTitre() { return titre; }
+
     public void setTitre(String titre) { this.titre = titre; }
+
     public String getDescription() { return description; }
+
     public void setDescription(String description) { this.description = description; }
+
     public String getAnneePromo() { return anneePromo; }
+
     public void setAnneePromo(String anneePromo) { this.anneePromo = anneePromo; }
+
     public LocalDate getDateDebut() { return dateDebut; }
+
     public void setDateDebut(LocalDate dateDebut) { this.dateDebut = dateDebut; }
+
     public LocalDate getDateFin() { return dateFin; }
+
     public void setDateFin(LocalDate dateFin) { this.dateFin = dateFin; }
+
     public float getTauxReussite() { return tauxReussite; }
+
     public void setTauxReussite(float tauxReussite) { this.tauxReussite = tauxReussite; }
+
     public String getLienSite() { return lienSite; }
+
     public void setLienSite(String lienSite) { this.lienSite = lienSite; }
+
     public String getLienProduction() { return lienProduction; }
+
     public void setLienProduction(String lienProduction) { this.lienProduction = lienProduction; }
+
     public Domaine getDomaine() { return domaine; }
+
     public void setDomaine(Domaine domaine) { this.domaine = domaine; }
+
     public Ue getUe() { return ue; }
+
     public void setUe(Ue ue) { this.ue = ue; }
+
     public List<GroupeSae> getGroupeSaes() { return groupeSaes; }
+
     public void setGroupeSaes(List<GroupeSae> groupeSaes) { this.groupeSaes = groupeSaes; }
+
     public List<SaeCompetence> getSaeCompetences() { return saeCompetences; }
+
     public void setSaeCompetences(List<SaeCompetence> saeCompetences) { this.saeCompetences = saeCompetences; }
+
     public List<Image> getImages() { return images; }
+    
     public void setImages(List<Image> images) { this.images = images; }
 }

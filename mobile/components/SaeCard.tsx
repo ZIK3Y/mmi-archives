@@ -31,7 +31,7 @@ export function SaeCard({ sae, showRank, rank }: SaeCardProps) {
   return (
     <TouchableOpacity
       style={styles.card}
-      onPress={() => router.push({ pathname: '/sae/[idSae]', params: { idSae: sae.id } })}
+      onPress={() => router.push({ pathname: '/sae/[idSae]', params: { idSae: sae.idSae } })}
       activeOpacity={0.7}
     >
       <View style={styles.topRow}>

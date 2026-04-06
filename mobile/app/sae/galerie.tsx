@@ -41,8 +41,8 @@ export default function GalerieScreen() {
         const saes: Sae[] = await fetchAllSae();
         const all: GalerieItem[] = [];
         for (const sae of saes) {
-          for (const uri of sae.images ?? []) {
-            all.push({ uri, saeTitre: sae.titre, saeId: sae.idSae });
+          for (const img of sae.images ?? []) {
+            all.push({ uri: img.url, saeTitre: sae.titre, saeId: sae.idSae });
           }
         }
         setItems(all);

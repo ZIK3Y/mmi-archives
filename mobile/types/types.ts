@@ -47,23 +47,8 @@ export interface SaeCompetence {
   competence: Competence;
 }
 
-export interface SaeEntity {
-  idSae: number;
-  titre: string;
-  description: string;
-  anneePromo: string;           // "MMI2" | "MMI3"
-  dateDebut: string;            // "YYYY-MM-DD"
-  dateFin: string;              // "YYYY-MM-DD"
-  tauxReussite: number;
-  lienSite: string;
-  lienProduction: string;
-  groupeSaes: GroupeSae[];      
-  saeCompetences: SaeCompetence[]; 
-  images: Image[];             
-}
-
 export interface Sae {
-  id: number;
+  idSae: number;
   titre: string;
   description: string;
   semestre: string;             // "S3" | "S4" | "S5" | "S6"

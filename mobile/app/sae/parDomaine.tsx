@@ -71,7 +71,7 @@ export default function ParDomaineScreen() {
       {!loading && !error && (
         <FlatList
           data={saes}
-          keyExtractor={(item) => String(item.id)}
+          keyExtractor={(item) => String(item.idSae)}
           renderItem={({ item }) => <SaeCard sae={item} />}
           contentContainerStyle={styles.list}
           ListHeaderComponent={

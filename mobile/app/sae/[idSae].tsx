@@ -49,7 +49,7 @@ export default function SaeDetailScreen() {
         setSae(data);
 
         if (data && classement.length > 0) {
-          const position = classement.findIndex((s) => s.id === data.id);
+          const position = classement.findIndex((s) => s.idSae === data.idSae);
           setRang(position >= 0 ? position + 1 : null);
         }
       } catch (e: any) {
@@ -101,7 +101,7 @@ export default function SaeDetailScreen() {
         <Text style={styles.heroTitre} numberOfLines={3}>{sae.titre}</Text>
         <View style={styles.badgesRow}>
           <DomaineBadge domaine={sae.domaine} size="md" />
-          <Pill label={sae.annee} />
+          <Pill label={sae.anneePromo} />
           <Pill label={sae.semestre} />
         </View>
         <View style={styles.statsRow}>

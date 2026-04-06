@@ -42,7 +42,7 @@ export default function GalerieScreen() {
         const all: GalerieItem[] = [];
         for (const sae of saes) {
           for (const uri of sae.images ?? []) {
-            all.push({ uri, saeTitre: sae.titre, saeId: sae.id });
+            all.push({ uri, saeTitre: sae.titre, saeId: sae.idSae });
           }
         }
         setItems(all);

@@ -1,8 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { AuthUser } from '@/types/types';
-import { useRouter } from 'expo-router';
-
-const router = useRouter();
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -13,7 +10,6 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-// Identifiants hardcodés (à remplacer par un vrai système d'auth)
 const VALID_USERS: Record<string, string> = {
   admin: 'mmi2026',
 };
@@ -22,7 +18,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
 
   const login = async (username: string, password: string): Promise<boolean> => {
-    // Simulation d'un appel auth — remplace par un vrai endpoint si disponible
     const valid = VALID_USERS[username] === password;
     if (valid) {
       setUser({ username, token: `token-${username}-${Date.now()}` });
@@ -32,8 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     setUser(null);
-    router.push('/');
-  }
+  };
 
   return (
     <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>

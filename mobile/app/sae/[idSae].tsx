@@ -40,7 +40,6 @@ export default function SaeDetailScreen() {
         setLoading(true);
         setError(null);
 
-        // Charger la SAé et le classement en parallèle
         const [data, classement] = await Promise.all([
           fetchSaeById(idSae as string),
           fetchSaeByNote(),
@@ -49,7 +48,7 @@ export default function SaeDetailScreen() {
         setSae(data);
 
         if (data && classement.length > 0) {
-          const position = classement.findIndex((s) => s.id === data.id);
+          const position = classement.findIndex((s) => s.idSae === data.idSae);
           setRang(position >= 0 ? position + 1 : null);
         }
       } catch (e: any) {
@@ -89,8 +88,12 @@ export default function SaeDetailScreen() {
   const noteBg =
     sae.note >= 16 ? Colors.successBg : sae.note >= 12 ? Colors.warningBg : Colors.dangerBg;
 
-  const groupeSize = sae.groupe?.length ?? 0;
-  const galerieSize = sae.images?.length ?? 0;
+  // Tous les membres de tous les groupes à plat
+  const tousLesMembres = sae.groupes.flatMap((g) => g.membres);
+  const groupeSize = tousLesMembres.length;
+  const galerieSize = sae.images.length;
+
+  const competencesLabel = sae.competences.map((c) => c.codeCompetence).join(', ');
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -101,7 +104,7 @@ export default function SaeDetailScreen() {
         <Text style={styles.heroTitre} numberOfLines={3}>{sae.titre}</Text>
         <View style={styles.badgesRow}>
           <DomaineBadge domaine={sae.domaine} size="md" />
-          <Pill label={sae.annee} />
+          <Pill label={sae.anneePromo} />
           <Pill label={sae.semestre} />
         </View>
         <View style={styles.statsRow}>
@@ -147,9 +150,9 @@ export default function SaeDetailScreen() {
               </InfoSection>
             )}
 
-            {!!sae.competences && (
+            {sae.competences.length > 0 && (
               <InfoSection title="Compétences" icon="target">
-                <Text style={styles.infoText}>{sae.competences}</Text>
+                <Text style={styles.infoText}>{competencesLabel}</Text>
               </InfoSection>
             )}
 
@@ -190,26 +193,25 @@ export default function SaeDetailScreen() {
           </View>
         )}
 
-        {/* ───── ONGLET GROUPE + CLASSEMENT ───── */}
+        {/* ───── ONGLET GROUPE ───── */}
         {tab === 'groupe' && (
           <View style={styles.tabContent}>
-            {/* Membres du groupe */}
             <InfoSection
               title={groupeSize > 0 ? `${groupeSize} membre${groupeSize > 1 ? 's' : ''}` : 'Groupe'}
               icon="users"
             >
               {groupeSize > 0 ? (
-                sae.groupe.map((m, i) => (
+                tousLesMembres.map((nom, i) => (
                   <View
-                    key={m.id}
+                    key={i}
                     style={[styles.membreRow, i < groupeSize - 1 && styles.membreRowBorder]}
                   >
                     <View style={styles.membreAvatar}>
                       <Text style={styles.membreInitial}>
-                        {m.prenom.charAt(0).toUpperCase()}
+                        {nom.charAt(0).toUpperCase()}
                       </Text>
                     </View>
-                    <Text style={styles.membreNom}>{m.prenom} {m.nom}</Text>
+                    <Text style={styles.membreNom}>{nom}</Text>
                   </View>
                 ))
               ) : (
@@ -217,16 +219,12 @@ export default function SaeDetailScreen() {
               )}
             </InfoSection>
 
-            {/* Classement */}
             <InfoSection title="Classement" icon="bar-chart-2">
               <View style={styles.classementRow}>
-                {/* Note */}
                 <View style={[styles.noteBigBox, { backgroundColor: noteBg }]}>
                   <Text style={[styles.noteBigVal, { color: noteColor }]}>{sae.note}</Text>
                   <Text style={[styles.noteBigUnit, { color: noteColor }]}>/20</Text>
                 </View>
-
-                {/* Infos classement */}
                 <View style={styles.classementInfo}>
                   {rang !== null && (
                     <View style={styles.classementStatRow}>
@@ -259,13 +257,13 @@ export default function SaeDetailScreen() {
           <View style={styles.tabContent}>
             {galerieSize > 0 ? (
               <View style={styles.imageGrid}>
-                {sae.images.map((uri, idx) => (
+                {sae.images.map((img, idx) => (
                   <TouchableOpacity
-                    key={idx}
-                    onPress={() => setSelectedImg(uri)}
+                    key={img.idImage}
+                    onPress={() => setSelectedImg(img.url)}
                     activeOpacity={0.85}
                   >
-                    <Image source={{ uri }} style={styles.thumb} resizeMode="cover" />
+                    <Image source={{ uri: img.url }} style={styles.thumb} resizeMode="cover" />
                   </TouchableOpacity>
                 ))}
               </View>
@@ -297,8 +295,6 @@ export default function SaeDetailScreen() {
     </SafeAreaView>
   );
 }
-
-// ── Composants internes ──────────────────────────────────────────────────────
 
 function Pill({ label }: { label: string }) {
   return (
@@ -375,8 +371,6 @@ function formatDate(dateStr: string): string {
     return dateStr;
   }
 }
-
-// ── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.background },
@@ -497,7 +491,6 @@ const styles = StyleSheet.create({
   membreInitial: { fontSize: 14, fontWeight: '700', color: Colors.textPrimary },
   membreNom: { fontSize: 14, color: Colors.textPrimary, fontWeight: '500' },
 
-  // Classement
   classementRow: { flexDirection: 'row', alignItems: 'center', gap: 16 },
   noteBigBox: {
     flexDirection: 'row',

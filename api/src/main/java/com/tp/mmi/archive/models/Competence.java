@@ -17,7 +17,6 @@ public class Competence {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    // On ignore cette liste : on n'a jamais besoin de lister les SAés depuis une compétence
     @OneToMany(mappedBy = "competence", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<SaeCompetence> saeCompetences;
@@ -31,13 +30,22 @@ public class Competence {
     }
 
     public Long getIdCompetence() { return idCompetence; }
+
     public void setIdCompetence(Long idCompetence) { this.idCompetence = idCompetence; }
+
     public String getCodeCompetence() { return codeCompetence; }
+
     public void setCodeCompetence(String codeCompetence) { this.codeCompetence = codeCompetence; }
+
     public String getLibelle() { return libelle; }
+
     public void setLibelle(String libelle) { this.libelle = libelle; }
+
     public String getDescription() { return description; }
+
     public void setDescription(String description) { this.description = description; }
+
     public List<SaeCompetence> getSaeCompetences() { return saeCompetences; }
+    
     public void setSaeCompetences(List<SaeCompetence> saeCompetences) { this.saeCompetences = saeCompetences; }
 }

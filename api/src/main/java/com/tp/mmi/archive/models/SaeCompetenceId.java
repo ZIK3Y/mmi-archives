@@ -16,8 +16,11 @@ public class SaeCompetenceId implements Serializable {
     }
 
     public Long getSae() { return sae; }
+
     public void setSae(Long sae) { this.sae = sae; }
+
     public Long getCompetence() { return competence; }
+    
     public void setCompetence(Long competence) { this.competence = competence; }
 
     @Override

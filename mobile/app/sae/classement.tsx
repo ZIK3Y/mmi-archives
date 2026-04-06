@@ -36,7 +36,7 @@ export default function ClassementScreen() {
       {!loading && !error && (
         <FlatList
           data={saes}
-          keyExtractor={(item) => String(item.id)}
+          keyExtractor={(item) => String(item.idSae)}
           renderItem={({ item, index }) => (
             <SaeCard sae={item} showRank rank={index + 1} />
           )}

@@ -16,8 +16,6 @@ public class Domaine {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    // On ne sérialise PAS la liste des SAés depuis Domaine
-    // (sinon Domaine → [Sae → Domaine → ...])
     @OneToMany(mappedBy = "domaine", cascade = CascadeType.ALL)
     @JsonManagedReference("domaine-saes")
     private List<Sae> saes;
@@ -30,11 +28,18 @@ public class Domaine {
     }
 
     public Long getIdDomaine() { return idDomaine; }
+
     public void setIdDomaine(Long idDomaine) { this.idDomaine = idDomaine; }
+
     public String getLibelle() { return libelle; }
+
     public void setLibelle(String libelle) { this.libelle = libelle; }
+
     public String getDescription() { return description; }
+
     public void setDescription(String description) { this.description = description; }
+
     public List<Sae> getSaes() { return saes; }
+
     public void setSaes(List<Sae> saes) { this.saes = saes; }
 }

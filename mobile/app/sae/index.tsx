@@ -64,7 +64,7 @@ export default function SaeListScreen() {
       {!loading && !error && (
         <FlatList
           data={filtered}
-          keyExtractor={(item) => String(item.id)}
+          keyExtractor={(item) => String(item.idSae)}
           renderItem={({ item }) => <SaeCard sae={item} />}
           contentContainerStyle={styles.list}
           ListEmptyComponent={

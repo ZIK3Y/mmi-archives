@@ -1,6 +1,6 @@
 services:
 
-  # ── Base de données MySQL ──────────────────────────────────────────────────
+  # Base de données MySQL
   db:
     image: mysql:latest
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
@@ -23,7 +23,7 @@ services:
       retries: 10
       timeout: 5s
 
-  # ── API Spring Boot ────────────────────────────────────────────────────────
+  # API Spring Boot 
   api:
     build:
       context: ../api

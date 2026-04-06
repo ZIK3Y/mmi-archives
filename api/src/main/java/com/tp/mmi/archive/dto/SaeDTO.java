@@ -3,18 +3,18 @@ package com.tp.mmi.archive.dto;
 import com.tp.mmi.archive.models.Sae;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class SaeDTO {
 
-    public record MembreDTO(String nom) {}
-
     public record GroupeDTO(
         Long idGroupe,
         String nomGroupe,
         List<String> membres,
-        String anneePromo
+        String anneePromo,
+        float note
     ) {}
 
     public record ImageDTO(
@@ -62,10 +62,8 @@ public class SaeDTO {
         this.lienProduction = sae.getLienProduction();
         this.ressourcesHumaines = "";
 
-        // Domaine
         this.domaine = sae.getDomaine() != null ? sae.getDomaine().getLibelle() : "";
 
-        // UE + Semestre
         if (sae.getUe() != null) {
             this.ue = sae.getUe().getCodeUe();
             this.semestre = "S" + sae.getUe().getSemestre();
@@ -74,7 +72,7 @@ public class SaeDTO {
             this.semestre = "";
         }
 
-        // Note moyenne (moyenne des notes des groupes)
+        // Note = moyenne des notes de tous les groupes
         if (sae.getGroupeSaes() != null && !sae.getGroupeSaes().isEmpty()) {
             this.note = (float) sae.getGroupeSaes().stream()
                 .mapToDouble(gs -> gs.getNote())
@@ -84,7 +82,6 @@ public class SaeDTO {
             this.note = 0f;
         }
 
-        // Compétences
         this.competences = sae.getSaeCompetences() != null
             ? sae.getSaeCompetences().stream()
                 .filter(sc -> sc.getCompetence() != null)
@@ -96,24 +93,23 @@ public class SaeDTO {
                 .collect(Collectors.toList())
             : List.of();
 
-        // Groupes avec membres
+        // Chaque groupe avec sa propre note
         this.groupes = sae.getGroupeSaes() != null
             ? sae.getGroupeSaes().stream()
                 .filter(gs -> gs.getGroupe() != null)
                 .map(gs -> {
                     var g = gs.getGroupe();
-                    List<String> membres = new java.util.ArrayList<>();
+                    List<String> membres = new ArrayList<>();
                     if (g.getEtudiant1() != null && !g.getEtudiant1().isBlank()) membres.add(g.getEtudiant1());
                     if (g.getEtudiant2() != null && !g.getEtudiant2().isBlank()) membres.add(g.getEtudiant2());
                     if (g.getEtudiant3() != null && !g.getEtudiant3().isBlank()) membres.add(g.getEtudiant3());
                     if (g.getEtudiant4() != null && !g.getEtudiant4().isBlank()) membres.add(g.getEtudiant4());
                     if (g.getEtudiant5() != null && !g.getEtudiant5().isBlank()) membres.add(g.getEtudiant5());
-                    return new GroupeDTO(g.getIdGroupe(), g.getNomGroupe(), membres, g.getAnneePromo());
+                    return new GroupeDTO(g.getIdGroupe(), g.getNomGroupe(), membres, g.getAnneePromo(), gs.getNote());
                 })
                 .collect(Collectors.toList())
             : List.of();
 
-        // Images
         this.images = sae.getImages() != null
             ? sae.getImages().stream()
                 .map(img -> new ImageDTO(img.getIdImage(), img.getUrl(), img.getLegende(), img.getOrdre()))

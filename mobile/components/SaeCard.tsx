@@ -14,19 +14,12 @@ interface SaeCardProps {
 export function SaeCard({ sae, showRank, rank }: SaeCardProps) {
   const router = useRouter();
 
-  const noteColor =
-    sae.note >= 16
-      ? Colors.success
-      : sae.note >= 12
-        ? Colors.warning
-        : Colors.danger;
+  const noteArrondie = parseFloat(sae.note.toFixed(2));
 
+  const noteColor =
+    sae.note >= 16 ? Colors.success : sae.note >= 12 ? Colors.warning : Colors.danger;
   const noteBg =
-    sae.note >= 16
-      ? Colors.successBg
-      : sae.note >= 12
-        ? Colors.warningBg
-        : Colors.dangerBg;
+    sae.note >= 16 ? Colors.successBg : sae.note >= 12 ? Colors.warningBg : Colors.dangerBg;
 
   return (
     <TouchableOpacity
@@ -34,6 +27,12 @@ export function SaeCard({ sae, showRank, rank }: SaeCardProps) {
       onPress={() => router.push({ pathname: '/sae/[idSae]', params: { idSae: sae.idSae } })}
       activeOpacity={0.7}
     >
+      {showRank && rank !== undefined && (
+        <View style={styles.rankBadge}>
+          <Text style={styles.rankText}>#{rank}</Text>
+        </View>
+      )}
+
       <View style={styles.topRow}>
         <View style={styles.titleBlock}>
           <View style={{ flex: 1 }}>
@@ -42,7 +41,7 @@ export function SaeCard({ sae, showRank, rank }: SaeCardProps) {
           </View>
         </View>
         <View style={[styles.notePill, { backgroundColor: noteBg }]}>
-          <Text style={[styles.noteText, { color: noteColor }]}>{sae.note}/20</Text>
+          <Text style={[styles.noteText, { color: noteColor }]}>{noteArrondie}/20</Text>
         </View>
       </View>
 
@@ -56,7 +55,7 @@ export function SaeCard({ sae, showRank, rank }: SaeCardProps) {
           <Feather name="check-circle" size={12} color={Colors.success} />
           <Text style={styles.taux}>{sae.tauxReussite}%</Text>
         </View>
-        <Feather name="chevron-right" size={14} color={Colors.textMuted} style={styles.chevron} />
+        <Feather name="chevron-right" size={14} color={Colors.accent} style={styles.chevron} />
       </View>
     </TouchableOpacity>
   );
@@ -72,6 +71,19 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginBottom: 10,
   },
+  rankBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: Colors.accentLight,
+    borderRadius: 4,
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    marginBottom: 8,
+  },
+  rankText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: Colors.accent,
+  },
   topRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -83,13 +95,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
     alignItems: 'flex-start',
-  },
-  rank: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: Colors.textMuted,
-    marginTop: 1,
-    minWidth: 24,
   },
   title: {
     fontSize: 15,

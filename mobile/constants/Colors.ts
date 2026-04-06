@@ -11,9 +11,10 @@ export const Colors = {
   textSecondary: '#5C5954',
   textMuted: '#9C9892',
 
-  // Accent
-  accent: '#1A1917',
-  accentLight: '#F0EEE9',
+  // Accent indigo
+  accent: '#4A4E8C',
+  accentLight: '#EAEBF5',
+  accentText: '#FFFFFF',
 
   // Status
   success: '#2D6A4F',

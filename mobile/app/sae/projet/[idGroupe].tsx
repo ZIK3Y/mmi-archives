@@ -100,7 +100,6 @@ export default function ProjetGroupeDetail() {
         )}
 
         {/* Liens du projet */}
-        {hasLinks && (
           <Section icon="link" title="Liens du projet">
             <View style={styles.linksCol}>
               {!!groupe.lienSite && (
@@ -131,7 +130,7 @@ export default function ProjetGroupeDetail() {
               )}
             </View>
           </Section>
-        )}
+        
 
         {/* Galerie */}
         <Section icon="image" title={`Galerie${images.length > 0 ? ` (${images.length})` : ''}`}>

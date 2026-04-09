@@ -20,6 +20,8 @@ public class GroupeSae {
     private Sae sae;
 
     private float note;
+    private String lienSite;
+    private String lienProduction;
 
     public GroupeSae() {}
 
@@ -27,6 +29,14 @@ public class GroupeSae {
         this.groupe = groupe;
         this.sae = sae;
         this.note = note;
+    }
+
+    public GroupeSae(Groupe groupe, Sae sae, float note, String lienSite, String lienProduction) {
+        this.groupe = groupe;
+        this.sae = sae;
+        this.note = note;
+        this.lienSite = lienSite;
+        this.lienProduction = lienProduction;
     }
 
     public Groupe getGroupe() { return groupe; }
@@ -40,4 +50,12 @@ public class GroupeSae {
     public float getNote() { return note; }
     
     public void setNote(float note) { this.note = note; }
+
+    public String getLienSite() { return lienSite; }
+
+    public void setLienSite(String lienSite) { this.lienSite = lienSite; }
+
+    public String getLienProduction() { return lienProduction; }
+
+    public void setLienProduction(String lienProduction) { this.lienProduction = lienProduction; }
 }

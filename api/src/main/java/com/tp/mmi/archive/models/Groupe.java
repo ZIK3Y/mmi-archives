@@ -23,6 +23,10 @@ public class Groupe {
     @JsonManagedReference("groupe-groupesaes")
     private List<GroupeSae> groupeSaes;
 
+    @OneToMany(mappedBy = "groupe", cascade = CascadeType.ALL)
+    @JsonManagedReference("groupe-images")
+    private List<Image> images;
+
     public Groupe() {}
 
     public Groupe(String nomGroupe, String etudiant1, String etudiant2, String etudiant3,
@@ -71,4 +75,8 @@ public class Groupe {
     public List<GroupeSae> getGroupeSaes() { return groupeSaes; }
     
     public void setGroupeSaes(List<GroupeSae> groupeSaes) { this.groupeSaes = groupeSaes; }
+
+    public List<Image> getImages() { return images; }
+    
+    public void setImages(List<Image> images) { this.images = images; }
 }

@@ -43,10 +43,6 @@ public class Sae {
     @JsonManagedReference("sae-competences")
     private List<SaeCompetence> saeCompetences;
 
-    @OneToMany(mappedBy = "sae", cascade = CascadeType.ALL)
-    @JsonManagedReference("sae-images")
-    private List<Image> images;
-
     public Sae() {}
 
     public Sae(String titre, String description, String anneePromo, LocalDate dateDebut,
@@ -115,8 +111,4 @@ public class Sae {
     public List<SaeCompetence> getSaeCompetences() { return saeCompetences; }
 
     public void setSaeCompetences(List<SaeCompetence> saeCompetences) { this.saeCompetences = saeCompetences; }
-
-    public List<Image> getImages() { return images; }
-    
-    public void setImages(List<Image> images) { this.images = images; }
 }

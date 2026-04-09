@@ -15,17 +15,17 @@ public class Image {
     private int ordre;
 
     @ManyToOne
-    @JoinColumn(name = "id_sae")
-    @JsonBackReference("sae-images")
-    private Sae sae;
+    @JoinColumn(name = "id_groupe")
+    @JsonBackReference("groupe-images")
+    private Groupe groupe;
 
     public Image() {}
 
-    public Image(String url, String legende, int ordre, Sae sae) {
+    public Image(String url, String legende, int ordre, Groupe groupe) {
         this.url = url;
         this.legende = legende;
         this.ordre = ordre;
-        this.sae = sae;
+        this.groupe = groupe;
     }
 
     public Long getIdImage() { return idImage; }
@@ -44,7 +44,7 @@ public class Image {
 
     public void setOrdre(int ordre) { this.ordre = ordre; }
 
-    public Sae getSae() { return sae; }
+    public Groupe getGroupe() { return groupe; }
     
-    public void setSae(Sae sae) { this.sae = sae; }
+    public void setGroupe(Groupe groupe) { this.groupe = groupe; }
 }

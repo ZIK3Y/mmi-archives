@@ -14,7 +14,10 @@ public class SaeDTO {
         String nomGroupe,
         List<String> membres,
         String anneePromo,
-        float note
+        float note,
+        String lienSite,
+        String lienProduction,
+        List<ImageDTO> images
     ) {}
 
     public record ImageDTO(
@@ -93,7 +96,7 @@ public class SaeDTO {
                 .collect(Collectors.toList())
             : List.of();
 
-        // Chaque groupe avec sa propre note
+        // Chaque groupe avec sa propre note, liens et images
         this.groupes = sae.getGroupeSaes() != null
             ? sae.getGroupeSaes().stream()
                 .filter(gs -> gs.getGroupe() != null)
@@ -105,16 +108,31 @@ public class SaeDTO {
                     if (g.getEtudiant3() != null && !g.getEtudiant3().isBlank()) membres.add(g.getEtudiant3());
                     if (g.getEtudiant4() != null && !g.getEtudiant4().isBlank()) membres.add(g.getEtudiant4());
                     if (g.getEtudiant5() != null && !g.getEtudiant5().isBlank()) membres.add(g.getEtudiant5());
-                    return new GroupeDTO(g.getIdGroupe(), g.getNomGroupe(), membres, g.getAnneePromo(), gs.getNote());
+
+                    List<ImageDTO> gImages = g.getImages() != null
+                        ? g.getImages().stream()
+                            .map(img -> new ImageDTO(img.getIdImage(), img.getUrl(), img.getLegende(), img.getOrdre()))
+                            .collect(Collectors.toList())
+                        : List.of();
+
+                    return new GroupeDTO(
+                        g.getIdGroupe(),
+                        g.getNomGroupe(),
+                        membres,
+                        g.getAnneePromo(),
+                        gs.getNote(),
+                        gs.getLienSite() != null ? gs.getLienSite() : "",
+                        gs.getLienProduction() != null ? gs.getLienProduction() : "",
+                        gImages
+                    );
                 })
                 .collect(Collectors.toList())
             : List.of();
 
-        this.images = sae.getImages() != null
-            ? sae.getImages().stream()
-                .map(img -> new ImageDTO(img.getIdImage(), img.getUrl(), img.getLegende(), img.getOrdre()))
-                .collect(Collectors.toList())
-            : List.of();
+        // Les images de la SAE sont l'agrégation des images de tous ses groupes
+        this.images = this.groupes.stream()
+            .flatMap(g -> g.images().stream())
+            .collect(Collectors.toList());
     }
 
     public Long getIdSae() { return idSae; }

@@ -111,7 +111,7 @@ export default function ProjetGroupeDetail() {
                     <Feather name="globe" size={16} color={Colors.accent} />
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={styles.linkBtnLabel}>Site du projet</Text>
+                    <Text style={styles.linkBtnLabel}>Lien du projet</Text>
                     <Text style={styles.linkBtnUrl} numberOfLines={1}>{groupe.lienSite}</Text>
                   </View>
                   <Feather name="external-link" size={14} color={Colors.textMuted} />

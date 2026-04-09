@@ -1,74 +1,81 @@
-# SAé MMI — Application Mobile React Native
+# MMI Archives - Gestion des SAé BUT MMI
 
-Application mobile Expo/React Native pour la gestion des SAé BUT MMI (MMI2 & MMI3) de l'IUT MLV Meaux.
+Plateforme moderne de gestion et d'archivage des Situations d'Apprentissage et d'Évaluation (SAé) pour les étudiants du BUT MMI. Ce projet se compose d'une API Spring Boot robuste et d'une application mobile fluide développée avec React Native (Expo).
 
-## Fonctionnalités
+---
 
-- 📚 Liste de toutes les SAé avec recherche
-- 📗 Filtrage par année (MMI2 / MMI3)
-- 🗂️ Filtrage par domaine (Web, Dev, DI, 3D, Création…)
-- 🏆 Classement par note
-- 🖼️ Galerie photos avec lightbox
-- 📝 Détail complet d'une SAé (compétences, groupe, liens, images)
-- ➕ Formulaire d'ajout de SAé (POST vers le back-end Spring Boot)
+## 🏗️ Architecture du Projet
 
-## Installation
+Le dépôt est structuré de la manière suivante :
 
-```bash
-npm install
-npx expo start
-```
+- **`/api`** : Code source du backend Spring Boot (Java).
+- **`/mobile`** : Application mobile React Native / Expo.
+- **`/docker`** : Fichiers de configuration Docker pour le déploiement local.
 
-## Configuration du back-end
+---
 
-Édite le fichier `constants/IPServer.ts` et remplace l'URL par celle de ton serveur Spring Boot :
+## 📋 Prérequis
 
-```ts
-const IP = 'http://192.168.X.X:8080'; // ton IP locale
-// ou en prod :
-const IP = 'https://ton-serveur.com';
-```
+Avant de commencer, assurez-vous d'avoir installé :
 
-## Structure du projet
+- [Docker](https://www.docker.com/) et Docker Compose.
+- [Node.js](https://nodejs.org/) (LTS recommandé).
+- Un gestionnaire de paquets comme `npm` ou `yarn`.
 
-```
-mmi-sae-app/
-├── api/
-│   └── SaeApi.ts           ← Appels HTTP vers l'API Spring Boot
-├── app/
-│   ├── _layout.tsx         ← Layout racine Expo Router
-│   ├── index.tsx           ← Menu principal
-│   ├── sae/
-│   │   ├── index.tsx       ← Liste toutes les SAé
-│   │   ├── [idSae].tsx     ← Détail d'une SAé
-│   │   ├── parAnnee.tsx    ← Filtre MMI2 / MMI3
-│   │   ├── parDomaine.tsx  ← Filtre par domaine
-│   │   ├── classement.tsx  ← Tri par note décroissante
-│   │   └── galerie.tsx     ← Galerie photos toutes SAé
-│   └── ajout/
-│       └── index.tsx       ← Formulaire d'ajout (POST)
-├── components/
-│   ├── SaeCard.tsx         ← Carte résumé d'une SAé
-│   ├── DomaineBadge.tsx    ← Badge coloré par domaine
-│   └── BackHeader.tsx      ← En-tête avec bouton retour
-├── constants/
-│   ├── Colors.ts           ← Palette de couleurs
-│   ├── IPServer.ts         ← URL du serveur back-end
-│   └── ScreenDimensions.ts
-├── hooks/
-│   └── useSaeList.ts       ← Hook de récupération des SAé
-└── types/
-    └── types.ts            ← Interfaces TypeScript (Sae, GroupeMembre…)
-```
+---
 
-## Endpoints API attendus (Spring Boot)
+## 🚀 Lancement de l'API (Backend)
 
-| Méthode | Route                    | Description                    |
-|---------|--------------------------|--------------------------------|
-| GET     | /api/saes                | Toutes les SAé                 |
-| GET     | /api/saes/:id            | Détail d'une SAé               |
-| GET     | /api/saes/annee/:annee   | SAé par année (MMI2 / MMI3)    |
-| GET     | /api/saes/domaine/:dom   | SAé par domaine                |
-| GET     | /api/saes/classement     | SAé triées par note desc       |
-| GET     | /api/saes/:id/images     | Images d'une SAé               |
-| POST    | /api/saes                | Créer une SAé                  |
+L'API et sa base de données MySQL sont entièrement conteneurisées pour faciliter le déploiement.
+
+1.  Ouvrez un terminal à la racine du projet.
+2.  Lancez les services via Docker Compose :
+    ```bash
+    docker compose -f docker/docker-compose.yml up -d --build
+    ```
+3.  L'API sera accessible sur `http://localhost:8080`.
+4.  La base de données MySQL sera accessible sur le port `3306`.
+
+*Note : Le conteneur API attend que la base de données soit saine (healthcheck) avant de démarrer.*
+
+---
+
+## 📱 Lancement de l'Application (Mobile)
+
+L'application mobile utilise Expo pour une expérience de développement simplifiée.
+
+1.  Naviguez dans le dossier mobile :
+    ```bash
+    cd mobile
+    ```
+2.  Installez les dépendances :
+    ```bash
+    npm install
+    ```
+3.  **Configuration de l'IP :**
+    Si vous testez sur un appareil physique, modifiez l'URL de l'API dans `mobile/constants/IPServer.ts` en remplaçant `localhost` par l'adresse IP locale de votre machine.
+4.  Lancez l'application :
+    ```bash
+    npx expo start
+    ```
+5.  Scannez le QR Code avec l'application **Expo Go** (Android/iOS) ou appuyez sur `w` pour la version Web.
+
+---
+
+## 🛠️ Fonctionnalités Principales
+
+- **Exploration** : Liste complète des SAé avec recherche et filtrage.
+- **Filtrage Intelligent** : Par année (MMI2/MMI3) ou par domaine (Web, Création, etc.).
+- **Classement** : Visualisation des projets par note.
+- **Galerie** : Exposition visuelle des réalisations étudiantes.
+- **Gestion** : Ajout de nouveaux projets via un formulaire dédié.
+
+---
+
+## ⚠️ Note Importante
+
+**Seul notre projet est actuellement opérationnel dans cette application.** Les liens externes ou redirections vers d'autres projets tiers ne sont pas fonctionnels car nous ne disposons pas des accès ou des ressources nécessaires pour ces derniers.
+
+---
+
+*Développé dans le cadre du BUT MMI — IUT de Marne-la-Vallée (Meaux).*

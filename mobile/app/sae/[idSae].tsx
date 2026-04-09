@@ -1,6 +1,11 @@
 import {
-  View, Text, StyleSheet, ScrollView, SafeAreaView,
-  TouchableOpacity, ActivityIndicator, Alert,
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  SafeAreaView,
+  TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -24,185 +29,157 @@ function noteBgFn(note: number, maxNote: number) {
   return Colors.warningBg;
 }
 
+function roundNote(n: number) {
+  return parseFloat(n.toFixed(2));
+}
+
+function noteColor(n: number) {
+  return n >= 16 ? Colors.success : n >= 12 ? Colors.warning : Colors.danger;
+}
+function noteBg(n: number) {
+  return n >= 16 ? Colors.successBg : n >= 12 ? Colors.warningBg : Colors.dangerBg;
+}
+
+function formatDate(d: string) {
+  if (!d) return '—';
+  try {
+    return new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+  } catch { return d; }
+}
+
 export default function SaeDetailScreen() {
   const { idSae } = useLocalSearchParams();
   const router = useRouter();
   const { isAuthenticated, user } = useAuth();
   const [sae, setSae] = useState<Sae | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (idSae) loadSae();
+    if (!idSae) return;
+    fetchSaeById(idSae as string)
+      .then(data => setSae(data))
+      .catch(e => setError(e.message ?? 'Erreur'))
+      .finally(() => setLoading(false));
   }, [idSae]);
 
-  const loadSae = async () => {
-    try {
-      const data = await fetchSaeById(idSae as string);
-      setSae(data);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDeleteSae = () => {
-    if (!sae) return;
-    Alert.alert(
-      'Supprimer la SAÉ',
-      `Supprimer « ${sae.titre} » ? Cette action est irréversible.`,
-      [
-        { text: 'Annuler', style: 'cancel' },
-        {
-          text: 'Supprimer', style: 'destructive',
-          onPress: async () => {
-            const ok = await deleteSae(sae.idSae, user?.token);
-            if (ok) {
-              Alert.alert('Succès', 'SAÉ supprimée.', [{ text: 'OK', onPress: () => router.back() }]);
-            } else {
-              Alert.alert('Erreur', 'Impossible de supprimer la SAÉ.');
-            }
-          },
-        },
-      ]
-    );
-  };
-
-  const handleDeleteGroupe = (idGroupe: number, nomGroupe: string) => {
-    Alert.alert(
-      'Supprimer le groupe',
-      `Supprimer « ${nomGroupe } » ?`,
-      [
-        { text: 'Annuler', style: 'cancel' },
-        {
-          text: 'Supprimer', style: 'destructive',
-          onPress: async () => {
-            const ok = await deleteGroupe(idGroupe, user?.token);
-            if (ok) {
-              setSae(prev => prev ? { ...prev, groupes: prev.groupes.filter(g => g.idGroupe !== idGroupe) } : prev);
-            } else {
-              Alert.alert('Erreur', 'Impossible de supprimer le groupe.');
-            }
-          },
-        },
-      ]
-    );
-  };
-
   if (loading) return (
-    <View style={styles.center}><ActivityIndicator size="large" color={Colors.accent} /></View>
+    <SafeAreaView style={styles.safe}>
+      <BackHeader title="Détail SAé" />
+      <View style={styles.center}><ActivityIndicator size="large" color={Colors.accent} /></View>
+    </SafeAreaView>
   );
 
-  if (!sae) return (
-    <View style={styles.center}><Text>SAÉ introuvable</Text></View>
+  if (error || !sae) return (
+    <SafeAreaView style={styles.safe}>
+      <BackHeader title="Détail SAé" />
+      <View style={styles.center}>
+        <Feather name="alert-circle" size={32} color={Colors.textMuted} />
+        <Text style={styles.errorText}>{error ?? 'SAé introuvable'}</Text>
+      </View>
+    </SafeAreaView>
   );
 
-  const notes = (sae.groupes ?? []).map(g => g.note ?? 0).filter(n => n > 0);
-  const maxNote = notes.length > 0 ? Math.max(...notes) : -1;
-
-  const adminActions = isAuthenticated ? (
-    <View style={styles.adminRow}>
-      <TouchableOpacity
-        style={styles.adminBtn}
-        onPress={() => router.push({ pathname: '/ajout', params: { editId: sae.idSae } })}
-        hitSlop={8}
-      >
-        <Feather name="edit-2" size={16} color={Colors.accent} />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.adminBtn} onPress={handleDeleteSae} hitSlop={8}>
-        <Feather name="trash-2" size={16} color={Colors.danger} />
-      </TouchableOpacity>
-    </View>
-  ) : undefined;
+  const moyenneNote = roundNote(sae.note);
+  const groupes = sae.groupes ?? [];
+  const competencesLabel = (sae.competences ?? []).map(c => c.codeCompetence).join(', ');
 
   return (
     <SafeAreaView style={styles.safe}>
-      <BackHeader title={sae.titre} rightAction={adminActions} />
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
+      <BackHeader title={sae.titre} />
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
 
-        <View style={styles.headerInfo}>
-          <DomaineBadge domaine={sae.domaine} size="md" />
-          <Text style={styles.description}>{sae.description}</Text>
-          <View style={styles.statsRow}>
-            <View style={styles.statPill}>
-              <Feather name="check-circle" size={12} color={Colors.success} />
-              <Text style={styles.statText}>{sae.tauxReussite.toFixed(2)}% de réussite</Text>
-            </View>
-            {!!sae.ue && (
-              <View style={styles.statPill}>
-                <Feather name="book" size={12} color={Colors.accent} />
-                <Text style={styles.statText}>{sae.ue}</Text>
-              </View>
-            )}
+        {/* Hero */}
+        <View style={styles.hero}>
+          <View style={styles.badgesRow}>
+            <DomaineBadge domaine={sae.domaine} size="md" />
+            <View style={styles.pill}><Text style={styles.pillText}>{sae.anneePromo}</Text></View>
+            <View style={styles.pill}><Text style={styles.pillText}>{sae.semestre}</Text></View>
+          </View>
+          <Text style={styles.heroTitre}>{sae.titre}</Text>
+          {!!sae.description && (
+            <Text style={styles.heroDesc}>{sae.description}</Text>
+          )}
+        </View>
+
+        {/* Stats globales */}
+        <View style={styles.statsRow}>
+          <View style={[styles.statBox, { backgroundColor: noteBg(sae.note) }]}>
+            <Feather name="award" size={14} color={noteColor(sae.note)} />
+            <Text style={[styles.statVal, { color: noteColor(sae.note) }]}>{moyenneNote}/20</Text>
+            <Text style={styles.statLbl}>Moy. note</Text>
+          </View>
+          <View style={[styles.statBox, { backgroundColor: Colors.successBg }]}>
+            <Feather name="check-circle" size={14} color={Colors.success} />
+            <Text style={[styles.statVal, { color: Colors.success }]}>{sae.tauxReussite}%</Text>
+            <Text style={styles.statLbl}>Réussite</Text>
+          </View>
+          <View style={[styles.statBox, { backgroundColor: Colors.accentLight }]}>
+            <Feather name="book-open" size={14} color={Colors.accent} />
+            <Text style={[styles.statVal, { color: Colors.accent }]}>{sae.ue || '—'}</Text>
+            <Text style={styles.statLbl}>UE</Text>
           </View>
         </View>
 
+        {/* Infos */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: Colors.accent }]}>Groupes et Résultats</Text>
-          {(sae.groupes ?? []).map((groupe, idx) => {
-            const gNote = groupe.note ?? 0;
-            const nColor = noteColorFn(gNote, maxNote);
-            const nBg = noteBgFn(gNote, maxNote);
-            const groupeLabel = groupe.nomGroupe ?? `Groupe ${idx + 1}`;
-            return (
-              <View key={groupe.idGroupe} style={styles.groupeCard}>
+          <View style={styles.sectionHeader}>
+            <Feather name="info" size={13} color={Colors.accent} />
+            <Text style={styles.sectionTitle}>Informations</Text>
+          </View>
+          <View style={styles.infoGrid}>
+            <InfoRow icon="calendar" label="Période" value={`${formatDate(sae.dateDebut)} → ${formatDate(sae.dateFin)}`} />
+            {!!competencesLabel && <InfoRow icon="target" label="Compétences" value={competencesLabel} />}
+            {!!sae.ressourcesHumaines && <InfoRow icon="users" label="Ressources" value={sae.ressourcesHumaines} />}
+            {!!sae.lienSite && <InfoRow icon="globe" label="Site" value={sae.lienSite} />}
+            {!!sae.lienProduction && <InfoRow icon="code" label="Code source" value={sae.lienProduction} />}
+          </View>
+        </View>
+
+        {/* Groupes */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Feather name="users" size={13} color={Colors.accent} />
+            <Text style={styles.sectionTitle}>
+              {groupes.length} groupe{groupes.length > 1 ? 's' : ''}
+            </Text>
+          </View>
+
+          {groupes.length === 0 ? (
+            <Text style={styles.emptyText}>Aucun groupe renseigné</Text>
+          ) : (
+            groupes.map((groupe, idx) => {
+              const gNote = roundNote(groupe.note ?? 0);
+              return (
                 <TouchableOpacity
-                  onPress={() => router.push({
-                    pathname: `/sae/projet/${groupe.idGroupe}`,
-                    params: { idSae: sae.idSae },
-                  })}
+                  key={groupe.idGroupe}
+                  style={styles.groupeCard}
                   activeOpacity={0.7}
+                  onPress={() => router.push({
+                    pathname: '/sae/projet/[idGroupe]',
+                    params: { idGroupe: groupe.idGroupe, idSae: sae.idSae },
+                  })}
                 >
-                  <View style={styles.groupeHeader}>
-                    <View style={styles.groupeMain}>
-                      <Text style={styles.groupeNom}>{groupeLabel}</Text>
-                      <Text style={styles.membres}>
-                        {groupe.membres?.join(', ') || 'Aucun membre'}
-                      </Text>
+                  <View style={styles.groupeLeft}>
+                    <View style={styles.groupeNum}>
+                      <Text style={styles.groupeNumText}>{idx + 1}</Text>
                     </View>
-                    <View style={[styles.noteBadge, { backgroundColor: nBg }]}>
-                      <Text style={[styles.noteText, { color: nColor }]}>
-                        {gNote > 0 ? gNote.toFixed(2) : 'N/C'}
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.groupeNom}>{groupe.nomGroupe}</Text>
+                      <Text style={styles.groupeMembres} numberOfLines={1}>
+                        {(groupe.membres ?? []).join(' · ') || 'Aucun membre'}
                       </Text>
                     </View>
                   </View>
-                  <View style={styles.cardFooter}>
-                    <Text style={[styles.linkText, { color: Colors.accent }]}>Voir le projet et les détails</Text>
+                  <View style={styles.groupeRight}>
+                    <View style={[styles.groupeNotePill, { backgroundColor: noteBg(gNote) }]}>
+                      <Text style={[styles.groupeNoteText, { color: noteColor(gNote) }]}>{gNote}/20</Text>
+                    </View>
                     <Feather name="chevron-right" size={16} color={Colors.accent} />
                   </View>
                 </TouchableOpacity>
-
-                {isAuthenticated && (
-                  <View style={styles.groupeAdminRow}>
-                    <TouchableOpacity
-                      style={styles.groupeAdminBtn}
-                      onPress={() => router.push({ pathname: '/ajout/groupe', params: { editId: groupe.idGroupe, idSae: sae.idSae } })}
-                    >
-                      <Feather name="edit-2" size={13} color={Colors.accent} />
-                      <Text style={[styles.groupeAdminText, { color: Colors.accent }]}>Modifier</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.groupeAdminBtn}
-                      onPress={() => handleDeleteGroupe(groupe.idGroupe, groupeLabel)}
-                    >
-                      <Feather name="trash-2" size={13} color={Colors.danger} />
-                      <Text style={[styles.groupeAdminText, { color: Colors.danger }]}>Supprimer</Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-              </View>
-            );
-          })}
-
-          {isAuthenticated && (
-            <TouchableOpacity
-              style={styles.addGroupeBtn}
-              onPress={() => router.push({ pathname: '/ajout/groupe', params: { idSae: sae.idSae } })}
-              activeOpacity={0.7}
-            >
-              <Feather name="plus" size={16} color={Colors.accent} />
-              <Text style={styles.addGroupeText}>Ajouter un groupe</Text>
-            </TouchableOpacity>
+              );
+            })
           )}
         </View>
 
@@ -211,38 +188,112 @@ export default function SaeDetailScreen() {
   );
 }
 
+function InfoRow({ icon, label, value }: { icon: keyof typeof Feather.glyphMap; label: string; value: string }) {
+  return (
+    <View style={styles.infoRow}>
+      <Feather name={icon} size={13} color={Colors.accent} style={{ marginTop: 2 }} />
+      <View style={{ flex: 1 }}>
+        <Text style={styles.infoLabel}>{label}</Text>
+        <Text style={styles.infoValue}>{value}</Text>
+      </View>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.background },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   scroll: { flex: 1 },
-  content: { padding: 20, paddingBottom: 40 },
+  content: { paddingBottom: 40 },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, padding: 24 },
+  errorText: { color: Colors.textSecondary, fontSize: 14, textAlign: 'center' },
 
-  adminRow: { flexDirection: 'row', gap: 4 },
-  adminBtn: { width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
+  hero: {
+    backgroundColor: Colors.surface,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+    gap: 10,
+  },
+  badgesRow: { flexDirection: 'row', gap: 6, flexWrap: 'wrap' },
+  pill: { backgroundColor: Colors.accentLight, borderRadius: 4, paddingHorizontal: 8, paddingVertical: 3 },
+  pillText: { fontSize: 11, color: Colors.accent, fontWeight: '600' },
+  heroTitre: { fontSize: 20, fontWeight: '800', color: Colors.textPrimary, lineHeight: 26 },
+  heroDesc: { fontSize: 14, color: Colors.textSecondary, lineHeight: 21 },
 
-  headerInfo: { marginBottom: 24, gap: 12 },
-  description: { fontSize: 15, color: Colors.textSecondary, lineHeight: 22 },
-  statsRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
-  statPill: { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: Colors.surface, borderWidth: 1, borderColor: Colors.border, borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4 },
-  statText: { fontSize: 12, color: Colors.textSecondary, fontWeight: '500' },
+  statsRow: {
+    flexDirection: 'row',
+    gap: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+  },
+  statBox: {
+    flex: 1,
+    borderRadius: 10,
+    padding: 12,
+    alignItems: 'center',
+    gap: 4,
+  },
+  statVal: { fontSize: 15, fontWeight: '800' },
+  statLbl: { fontSize: 10, color: Colors.textMuted, fontWeight: '500' },
 
-  section: { marginBottom: 24 },
-  sectionTitle: { fontSize: 18, fontWeight: '700', marginBottom: 16 },
+  section: {
+    marginHorizontal: 16,
+    marginBottom: 16,
+    backgroundColor: Colors.surface,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    overflow: 'hidden',
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+    backgroundColor: Colors.surfaceAlt,
+  },
+  sectionTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: Colors.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
 
-  groupeCard: { backgroundColor: Colors.surface, borderRadius: 12, marginBottom: 12, borderWidth: 1, borderColor: Colors.border, overflow: 'hidden' },
-  groupeHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', padding: 16, paddingBottom: 8 },
-  groupeMain: { flex: 1, marginRight: 10 },
-  groupeNom: { fontSize: 16, fontWeight: '600', color: Colors.textPrimary },
-  membres: { fontSize: 13, color: Colors.textMuted, marginTop: 4 },
-  noteBadge: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, minWidth: 60, alignItems: 'center' },
-  noteText: { fontWeight: 'bold', fontSize: 14 },
-  cardFooter: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingBottom: 12, paddingTop: 4 },
-  linkText: { fontSize: 13, fontWeight: '600', flex: 1 },
+  infoGrid: { padding: 14, gap: 12 },
+  infoRow: { flexDirection: 'row', gap: 10 },
+  infoLabel: { fontSize: 11, color: Colors.textMuted, fontWeight: '600', marginBottom: 2 },
+  infoValue: { fontSize: 14, color: Colors.textPrimary, lineHeight: 20 },
 
-  groupeAdminRow: { flexDirection: 'row', gap: 0, borderTopWidth: 1, borderTopColor: Colors.border },
-  groupeAdminBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 9 },
-  groupeAdminText: { fontSize: 13, fontWeight: '500' },
+  emptyText: { padding: 16, color: Colors.textMuted, fontStyle: 'italic', fontSize: 14 },
 
-  addGroupeBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderWidth: 1, borderColor: Colors.accent, borderStyle: 'dashed', borderRadius: 10, paddingVertical: 12 },
-  addGroupeText: { fontSize: 14, color: Colors.accent, fontWeight: '600' },
+  groupeCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 13,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+    gap: 10,
+  },
+  groupeLeft: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  groupeNum: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: Colors.accentLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  groupeNumText: { fontSize: 12, fontWeight: '700', color: Colors.accent },
+  groupeNom: { fontSize: 14, fontWeight: '600', color: Colors.textPrimary },
+  groupeMembres: { fontSize: 12, color: Colors.textMuted, marginTop: 2 },
+  groupeRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  groupeNotePill: { borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3 },
+  groupeNoteText: { fontSize: 13, fontWeight: '700' },
 });

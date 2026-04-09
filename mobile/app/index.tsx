@@ -16,13 +16,17 @@ function MenuItem({ icon, label, subtitle, onPress, accent }: MenuItemProps) {
   return (
     <TouchableOpacity style={[styles.menuItem, accent && styles.menuItemAccent]} onPress={onPress} activeOpacity={0.7}>
       <View style={[styles.menuIcon, accent && styles.menuIconAccent]}>
-        <Feather name={icon} size={20} color={accent ? Colors.surface : Colors.textPrimary} />
+        <Feather name={icon} size={20} color={accent ? Colors.accentText : Colors.accent} />
       </View>
       <View style={styles.menuText}>
         <Text style={[styles.menuLabel, accent && styles.menuLabelAccent]}>{label}</Text>
         <Text style={[styles.menuSub, accent && styles.menuSubAccent]}>{subtitle}</Text>
       </View>
-      <Feather name="chevron-right" size={16} color={accent ? 'rgba(255,255,255,0.5)' : Colors.textMuted} />
+      <Feather
+        name="chevron-right"
+        size={16}
+        color={accent ? 'rgba(255,255,255,0.6)' : Colors.accent}
+      />
     </TouchableOpacity>
   );
 }
@@ -36,6 +40,7 @@ export default function HomeScreen() {
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
 
         <View style={styles.header}>
+          <View style={styles.headerAccentBar} />
           <Text style={styles.institution}>IUT MLV Meaux · BUT MMI</Text>
           <Text style={styles.title}>Archive SAÉ</Text>
           <Text style={styles.subtitle}>Historisation et consultation des SAÉ MMI2 et MMI3</Text>
@@ -52,22 +57,13 @@ export default function HomeScreen() {
 
         <Text style={styles.sectionLabel}>Compte</Text>
         <View style={styles.card}>
-          {isAuthenticated ? (
-            <MenuItem
-              icon="user"
-              label="Mon profil"
-              subtitle="Gérer les SAÉ et les groupes"
-              onPress={() => router.push('/profil')}
-              accent
-            />
-          ) : (
-            <MenuItem
-              icon="log-in"
-              label="Se connecter"
-              subtitle="Pour ajouter des SAÉ et des groupes"
-              onPress={() => router.push('/auth/login')}
-            />
-          )}
+          <MenuItem
+            icon="log-in"
+            label="Se connecter"
+            subtitle="Pour ajouter des SAé"
+            onPress={() => router.push('/auth/login')}
+            accent
+          />
         </View>
 
       </ScrollView>
@@ -79,23 +75,82 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.background },
   content: { paddingBottom: 40 },
 
-  header: { paddingHorizontal: 24, paddingTop: 36, paddingBottom: 28 },
-  institution: { fontSize: 11, color: Colors.textMuted, fontWeight: '600', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 8 },
-  title: { fontSize: 30, fontWeight: '800', color: Colors.textPrimary, marginBottom: 8, letterSpacing: -0.5 },
-  subtitle: { fontSize: 14, color: Colors.textSecondary, lineHeight: 20 },
+  header: {
+    paddingHorizontal: 24,
+    paddingTop: 36,
+    paddingBottom: 28,
+  },
+  headerAccentBar: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: Colors.accent,
+    marginBottom: 16,
+  },
+  institution: {
+    fontSize: 11,
+    color: Colors.accent,
+    fontWeight: '600',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    marginBottom: 8,
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: '800',
+    color: Colors.textPrimary,
+    marginBottom: 8,
+    letterSpacing: -0.5,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    lineHeight: 20,
+  },
 
   sectionLabel: { fontSize: 11, fontWeight: '700', color: Colors.textMuted, letterSpacing: 0.8, textTransform: 'uppercase', paddingHorizontal: 24, marginBottom: 8, marginTop: 8 },
 
   card: { marginHorizontal: 16, marginBottom: 20, backgroundColor: Colors.surface, borderRadius: 12, borderWidth: 1, borderColor: Colors.border, overflow: 'hidden' },
 
-  menuItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 14, paddingHorizontal: 16, gap: 14, backgroundColor: Colors.surface },
-  menuItemAccent: { backgroundColor: Colors.accent },
-  menuIcon: { width: 38, height: 38, borderRadius: 9, backgroundColor: Colors.surfaceAlt, alignItems: 'center', justifyContent: 'center' },
-  menuIconAccent: { backgroundColor: 'rgba(255,255,255,0.15)' },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    gap: 14,
+    backgroundColor: Colors.surface,
+  },
+  menuItemAccent: {
+    backgroundColor: Colors.accent,
+  },
+  menuIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: 9,
+    backgroundColor: Colors.accentLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  menuIconAccent: {
+    backgroundColor: 'rgba(255,255,255,0.2)',
+  },
   menuText: { flex: 1 },
-  menuLabel: { fontSize: 15, fontWeight: '600', color: Colors.textPrimary, marginBottom: 2 },
-  menuLabelAccent: { color: Colors.surface },
-  menuSub: { fontSize: 12, color: Colors.textMuted },
-  menuSubAccent: { color: 'rgba(255,255,255,0.6)' },
-  separator: { height: 1, backgroundColor: Colors.border, marginLeft: 68 },
+  menuLabel: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: Colors.textPrimary,
+    marginBottom: 2,
+  },
+  menuLabelAccent: { color: Colors.accentText },
+  menuSub: {
+    fontSize: 12,
+    color: Colors.textMuted,
+  },
+  menuSubAccent: { color: 'rgba(255,255,255,0.7)' },
+
+  separator: {
+    height: 1,
+    backgroundColor: Colors.border,
+    marginLeft: 68,
+  },
 });

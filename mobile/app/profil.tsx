@@ -11,9 +11,14 @@ export default function ProfilScreen() {
   const handleLogout = () => {
     Alert.alert('Déconnexion', 'Confirmer la déconnexion ?', [
       { text: 'Annuler', style: 'cancel' },
-      { text: 'Déconnexion', style: 'destructive', onPress: logout },
+      { text: 'Déconnexion', style: 'destructive', onPress: logoutAndRedirect },
     ]);
   };
+
+  const logoutAndRedirect = () => {
+    logout();
+    router.push('/');
+  }
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -54,9 +59,9 @@ export default function ProfilScreen() {
 
             <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/sae')} activeOpacity={0.7}>
               <View style={styles.menuIcon}>
-                <Feather name="edit-2" size={18} color={Colors.accent} />
+                <Feather name="edit-2" size={18} color={Colors.textPrimary} />
               </View>
-              <Text style={[styles.menuLabel, { color: Colors.accent }]}>Gérer les SAÉ</Text>
+              <Text style={styles.menuLabel}>Gérer les SAÉ</Text>
               <Feather name="chevron-right" size={16} color={Colors.textMuted} />
             </TouchableOpacity>
           </View>

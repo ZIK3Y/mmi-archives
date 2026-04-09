@@ -79,7 +79,6 @@ export default function ProjetGroupeDetail() {
           <Text style={styles.heroSaeTitre} numberOfLines={2}>{sae.titre}</Text>
           <Text style={styles.heroGroupeNom}>{groupe.nomGroupe}</Text>
           <View style={[styles.noteBadge, { backgroundColor: noteBg(gNote, maxNote) }]}>
-            <Feather name="award" size={14} color={noteColor(gNote, maxNote)} />
             <Text style={[styles.noteBadgeVal, { color: noteColor(gNote, maxNote) }]}>
               {gNote > 0 ? `${gNote.toFixed(2)}/20` : 'Non noté'}
             </Text>

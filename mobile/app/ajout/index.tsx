@@ -152,10 +152,10 @@ export default function AjoutSaeScreen() {
     if (isEditMode && editId && ues.length > 0 && domaines.length > 0) {
       fetchSaeById(editId).then(sae => {
         if (!sae) return;
-        
+
         // Trouver l'ID du domaine par son libellé
         const dom = domaines.find(d => d.libelle === sae.domaine);
-        
+
         // Trouver les IDs des UEs par leur code
         // Note: sae.ue semble être un seul code (ex: "UE1.1") dans le DTO actuel
         const selectedUe = ues.find(u => u.codeUe === sae.ue);
@@ -244,11 +244,11 @@ export default function AjoutSaeScreen() {
           {domaines.length === 0
             ? <Text style={styles.loadingHint}>Chargement…</Text>
             : <ChipGroup
-                options={domaines.map(d => d.libelle)}
-                value={domaines.find(d => d.idDomaine === form.domaineId)?.libelle ?? ''}
-                onChange={v => set('domaineId', domaines.find(d => d.libelle === v)?.idDomaine ?? null)}
-                wrap
-              />
+              options={domaines.map(d => d.libelle)}
+              value={domaines.find(d => d.idDomaine === form.domaineId)?.libelle ?? ''}
+              onChange={v => set('domaineId', domaines.find(d => d.libelle === v)?.idDomaine ?? null)}
+              wrap
+            />
           }
         </Field>
 
@@ -256,19 +256,19 @@ export default function AjoutSaeScreen() {
           {ues.length === 0
             ? <Text style={styles.loadingHint}>Chargement…</Text>
             : <View style={[styles.chipGroup, styles.chipGroupWrap]}>
-                {ues.map(ue => {
-                  const active = form.ueIds.includes(ue.idUe);
-                  return (
-                    <TouchableOpacity key={ue.idUe}
-                      style={[styles.chip, active && styles.chipActive]}
-                      onPress={() => toggleUe(ue.idUe)} activeOpacity={0.7}>
-                      <Text style={[styles.chipText, active && styles.chipTextActive]}>
-                        {ueLabel(ue)}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
+              {ues.map(ue => {
+                const active = form.ueIds.includes(ue.idUe);
+                return (
+                  <TouchableOpacity key={ue.idUe}
+                    style={[styles.chip, active && styles.chipActive]}
+                    onPress={() => toggleUe(ue.idUe)} activeOpacity={0.7}>
+                    <Text style={[styles.chipText, active && styles.chipTextActive]}>
+                      {ueLabel(ue)}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           }
         </Field>
 
@@ -276,19 +276,19 @@ export default function AjoutSaeScreen() {
           {competences.length === 0
             ? <Text style={styles.loadingHint}>Chargement…</Text>
             : <View style={[styles.chipGroup, styles.chipGroupWrap]}>
-                {competences.map(c => {
-                  const active = form.competenceIds.includes(c.idCompetence);
-                  return (
-                    <TouchableOpacity key={c.idCompetence}
-                      style={[styles.chip, active && styles.chipActive]}
-                      onPress={() => toggleCompetence(c.idCompetence)} activeOpacity={0.7}>
-                      <Text style={[styles.chipText, active && styles.chipTextActive]}>
-                        {c.libelle}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
+              {competences.map(c => {
+                const active = form.competenceIds.includes(c.idCompetence);
+                return (
+                  <TouchableOpacity key={c.idCompetence}
+                    style={[styles.chip, active && styles.chipActive]}
+                    onPress={() => toggleCompetence(c.idCompetence)} activeOpacity={0.7}>
+                    <Text style={[styles.chipText, active && styles.chipTextActive]}>
+                      {c.libelle}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           }
         </Field>
 
@@ -301,34 +301,16 @@ export default function AjoutSaeScreen() {
         <DateField label="Date de début" value={form.dateDebut} onChange={v => set('dateDebut', v)} />
         <DateField label="Date de fin" value={form.dateFin} onChange={v => set('dateFin', v)} />
 
-        <Field label="Lien vers le site">
-          <View style={styles.inputRow}>
-            <Feather name="globe" size={15} color={Colors.textMuted} />
-            <TextInput style={[styles.input, styles.inputFlex]} value={form.lienSite}
-              onChangeText={v => set('lienSite', v)} placeholder="https://…"
-              placeholderTextColor={Colors.textMuted} keyboardType="url" autoCapitalize="none" />
-          </View>
-        </Field>
-
-        <Field label="Lien vers le code source">
-          <View style={styles.inputRow}>
-            <Feather name="code" size={15} color={Colors.textMuted} />
-            <TextInput style={[styles.input, styles.inputFlex]} value={form.lienProduction}
-              onChangeText={v => set('lienProduction', v)} placeholder="https://github.com/…"
-              placeholderTextColor={Colors.textMuted} keyboardType="url" autoCapitalize="none" />
-          </View>
-        </Field>
-
         <TouchableOpacity style={[styles.submitBtn, loading && styles.submitDisabled]}
           onPress={handleSubmit} disabled={loading} activeOpacity={0.8}>
           {loading
             ? <ActivityIndicator color={Colors.surface} size="small" />
             : <>
-                <Feather name="save" size={16} color={Colors.surface} />
-                <Text style={styles.submitText}>
-                  {isEditMode ? 'Enregistrer les modifications' : 'Enregistrer la SAÉ'}
-                </Text>
-              </>
+              <Feather name="save" size={16} color={Colors.surface} />
+              <Text style={styles.submitText}>
+                {isEditMode ? 'Enregistrer les modifications' : 'Enregistrer la SAÉ'}
+              </Text>
+            </>
           }
         </TouchableOpacity>
       </ScrollView>

@@ -297,7 +297,7 @@ INSERT INTO groupe_sae (id_groupe, id_sae, note, lien_site, lien_production) VAL
 (35, 2, 13.40, 'https://zenati-prevost-sae501.netlify.app',     'https://github.com/g501-16/mmi-archive'),
 (36, 2, 12.18, '',                                              'https://github.com/g501-17/mmi-archive'),
 (37, 2, 10.55, '',                                              'https://github.com/g501-18/mmi-archive'),
-(38, 2, 17.33, 'https://baldinetti-dinh-sae501.netlify.app',   'https://github.com/g501-19/mmi-archive'),
+(38, 2, 17.33, 'https://baldinetti-dinh-sae501.netlify.app',   'https://github.com/MatteoBaldinetti/SAE-501_Synapse'),
 (39, 2, 14.45, 'https://roure-seghiri-sae501.netlify.app',     'https://github.com/g501-20/mmi-archive'),
 (40, 2, 13.93, 'https://camelin-rakotomavo-sae501.netlify.app', 'https://github.com/g501-21/mmi-archive'),
 (41, 2, 14.36, 'https://som-lopere-sae501.netlify.app',         'https://github.com/g501-22/mmi-archive');

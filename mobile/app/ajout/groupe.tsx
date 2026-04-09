@@ -2,9 +2,9 @@ import {
   View, Text, TextInput, StyleSheet, ScrollView, SafeAreaView,
   TouchableOpacity, ActivityIndicator, Alert, Modal,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { createGroupeWork, fetchAllSae } from '@/api/SaeApi';
+import { createGroupeWork, updateGroupe, fetchAllSae, fetchGroupeById, fetchSaeById } from '@/api/SaeApi';
 import { useAuth } from '@/contexts/AuthContext';
 import { BackHeader } from '@/components/BackHeader';
 import { Colors } from '@/constants/Colors';
@@ -15,6 +15,8 @@ const ANNEES = ['MMI2', 'MMI3'];
 
 export default function AjoutGroupeScreen() {
   const router = useRouter();
+  const { editId, idSae: paramIdSae } = useLocalSearchParams<{ editId?: string, idSae?: string }>();
+  const isEditMode = !!editId;
   const { isAuthenticated, user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [saes, setSaes] = useState<Sae[]>([]);
@@ -22,7 +24,7 @@ export default function AjoutGroupeScreen() {
   const [showSaePicker, setShowSaePicker] = useState(false);
 
   const [form, setForm] = useState<GroupeWorkFormData>({
-    idSae: null,
+    idSae: paramIdSae ? parseInt(paramIdSae) : null,
     nomGroupe: '',
     anneePromo: 'MMI2',
     etudiant1: '',
@@ -43,6 +45,54 @@ export default function AjoutGroupeScreen() {
   useEffect(() => {
     fetchAllSae().then(data => { setSaes(data); setSaesLoading(false); });
   }, []);
+
+  // Pré-remplissage en mode édition
+  useEffect(() => {
+    if (isEditMode && editId) {
+      // On récupère d'abord les infos de base du groupe
+      fetchGroupeById(editId).then(groupe => {
+        if (!groupe) return;
+        
+        const newForm: Partial<GroupeWorkFormData> = {
+          nomGroupe: groupe.nomGroupe ?? '',
+          anneePromo: groupe.anneePromo ?? 'MMI2',
+          etudiant1: groupe.etudiant1 ?? '',
+          etudiant2: groupe.etudiant2 ?? '',
+          etudiant3: groupe.etudiant3 ?? '',
+          etudiant4: groupe.etudiant4 ?? '',
+          etudiant5: groupe.etudiant5 ?? '',
+        };
+
+        // Si on a l'ID de la SAE, on récupère la note et les liens spécifiques
+        const saeIdToUse = paramIdSae || form.idSae;
+        if (saeIdToUse) {
+          fetchSaeById(saeIdToUse).then(sae => {
+            if (sae && sae.groupes) {
+              const found = sae.groupes.find(g => g.idGroupe.toString() === editId.toString());
+              if (found) {
+                setForm(prev => ({
+                  ...prev,
+                  ...newForm,
+                  idSae: parseInt(saeIdToUse.toString()),
+                  note: found.note ? found.note.toString() : '',
+                  // Ces champs peuvent ne pas être dans le DTO actuel, mais on les prévoit
+                  lienSite: (found as any).lienSite ?? '',
+                  lienProduction: (found as any).lienProduction ?? '',
+                  images: (found as any).images ?? [],
+                }));
+              } else {
+                setForm(prev => ({ ...prev, ...newForm }));
+              }
+            } else {
+              setForm(prev => ({ ...prev, ...newForm }));
+            }
+          });
+        } else {
+          setForm(prev => ({ ...prev, ...newForm }));
+        }
+      });
+    }
+  }, [editId, paramIdSae]);
 
   const set = (key: keyof GroupeWorkFormData, value: any) =>
     setForm(prev => ({ ...prev, [key]: value }));
@@ -79,15 +129,25 @@ export default function AjoutGroupeScreen() {
       Alert.alert('Champ requis', 'La note est obligatoire (ex : 14.5).');
       return;
     }
-    const groupeNum = (selectedSae?.groupes?.length ?? 0) + 1;
-    const nomGroupe = `Groupe ${groupeNum}`;
+    
     try {
       setLoading(true);
-      const result = await createGroupeWork({ ...form, nomGroupe }, user?.token);
-      if (!result) { Alert.alert('Erreur', 'Impossible d\'ajouter le groupe.'); return; }
-      Alert.alert('Succès', `Groupe ajouté à « ${selectedSae?.titre ?? 'la SAÉ'} ».`, [
-        { text: 'OK', onPress: () => router.back() },
-      ]);
+      let result;
+      if (isEditMode && editId) {
+        result = await updateGroupe(parseInt(editId), form, user?.token);
+        if (!result) { Alert.alert('Erreur', 'Impossible de modifier le groupe.'); return; }
+        Alert.alert('Succès', `Groupe « ${form.nomGroupe || 'modifié'} » mis à jour.`, [
+          { text: 'OK', onPress: () => router.back() },
+        ]);
+      } else {
+        const groupeNum = (selectedSae?.groupes?.length ?? 0) + 1;
+        const nomGroupe = `Groupe ${groupeNum}`;
+        result = await createGroupeWork({ ...form, nomGroupe }, user?.token);
+        if (!result) { Alert.alert('Erreur', 'Impossible d\'ajouter le groupe.'); return; }
+        Alert.alert('Succès', `Groupe ajouté à « ${selectedSae?.titre ?? 'la SAÉ'} ».`, [
+          { text: 'OK', onPress: () => router.back() },
+        ]);
+      }
     } catch (e: any) {
       Alert.alert('Erreur', e.message ?? 'Erreur inconnue');
     } finally { setLoading(false); }
@@ -97,7 +157,7 @@ export default function AjoutGroupeScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <BackHeader title="Ajouter un groupe" />
+      <BackHeader title={isEditMode ? 'Modifier le groupe' : 'Ajouter un groupe'} />
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
 
@@ -236,7 +296,7 @@ export default function AjoutGroupeScreen() {
           onPress={handleSubmit} disabled={loading} activeOpacity={0.8}>
           {loading
             ? <ActivityIndicator color={Colors.surface} size="small" />
-            : <><Feather name="users" size={16} color={Colors.surface} /><Text style={styles.submitText}>Ajouter le groupe</Text></>
+            : <><Feather name={isEditMode ? "save" : "users"} size={16} color={Colors.surface} /><Text style={styles.submitText}>{isEditMode ? 'Enregistrer les modifications' : 'Ajouter le groupe'}</Text></>
           }
         </TouchableOpacity>
       </ScrollView>

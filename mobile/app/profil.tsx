@@ -107,6 +107,6 @@ const styles = StyleSheet.create({
   logoutBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12, paddingHorizontal: 20 },
   logoutText: { fontSize: 15, color: Colors.danger, fontWeight: '500' },
 
-  loginBtn: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: Colors.textPrimary, borderRadius: 10, paddingVertical: 14, paddingHorizontal: 32, width: '100%', justifyContent: 'center' },
+  loginBtn: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: Colors.accent, borderRadius: 10, paddingVertical: 14, paddingHorizontal: 32, width: '100%', justifyContent: 'center' },
   loginText: { color: Colors.surface, fontSize: 15, fontWeight: '600' },
 });

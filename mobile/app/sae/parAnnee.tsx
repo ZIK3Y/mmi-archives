@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     borderRadius: 7,
     alignItems: 'center',
   },
-  toggleActive: { backgroundColor: Colors.textPrimary },
+  toggleActive: { backgroundColor: Colors.accent },
   toggleText: { color: Colors.textMuted, fontWeight: '600', fontSize: 15 },
   toggleTextActive: { color: Colors.surface },
 

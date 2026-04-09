@@ -109,6 +109,25 @@ export const createGroupeWork = async (data: GroupeWorkFormData, token?: string)
   } catch { return null; }
 };
 
+export const fetchGroupeById = async (id: number | string): Promise<any> => {
+  try {
+    const res = await fetch(`${DOMAINE}/groupes/${id}`);
+    return handleResponse<any>(res);
+  } catch { return null; }
+};
+
+export const updateGroupe = async (id: number, data: GroupeWorkFormData, token?: string): Promise<any> => {
+  try {
+    const res = await fetch(`${DOMAINE}/groupes/${id}`, {
+      method: 'PUT',
+      headers: authHeaders(token),
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) return null;
+    return handleResponse<any>(res);
+  } catch { return null; }
+};
+
 export const deleteGroupe = async (idGroupe: number, token?: string): Promise<boolean> => {
   try {
     const res = await fetch(`${DOMAINE}/groupes/${idGroupe}`, {

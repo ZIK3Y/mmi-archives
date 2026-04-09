@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
   card: { marginHorizontal: 16, marginBottom: 20, backgroundColor: Colors.surface, borderRadius: 12, borderWidth: 1, borderColor: Colors.border, overflow: 'hidden' },
 
   menuItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 14, paddingHorizontal: 16, gap: 14, backgroundColor: Colors.surface },
-  menuItemAccent: { backgroundColor: Colors.textPrimary },
+  menuItemAccent: { backgroundColor: Colors.accent },
   menuIcon: { width: 38, height: 38, borderRadius: 9, backgroundColor: Colors.surfaceAlt, alignItems: 'center', justifyContent: 'center' },
   menuIconAccent: { backgroundColor: 'rgba(255,255,255,0.15)' },
   menuText: { flex: 1 },

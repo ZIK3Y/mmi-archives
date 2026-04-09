@@ -149,15 +149,23 @@ export default function AjoutSaeScreen() {
 
   // Pré-remplissage en mode édition
   useEffect(() => {
-    if (isEditMode && editId) {
+    if (isEditMode && editId && ues.length > 0 && domaines.length > 0) {
       fetchSaeById(editId).then(sae => {
         if (!sae) return;
+        
+        // Trouver l'ID du domaine par son libellé
+        const dom = domaines.find(d => d.libelle === sae.domaine);
+        
+        // Trouver les IDs des UEs par leur code
+        // Note: sae.ue semble être un seul code (ex: "UE1.1") dans le DTO actuel
+        const selectedUe = ues.find(u => u.codeUe === sae.ue);
+
         setForm({
           titre: sae.titre ?? '',
           description: sae.description ?? '',
           anneePromo: sae.anneePromo ?? 'MMI2',
-          domaineId: null,
-          ueIds: [],
+          domaineId: dom ? dom.idDomaine : null,
+          ueIds: selectedUe ? [selectedUe.idUe] : [],
           competenceIds: (sae.competences ?? []).map(c => c.idCompetence),
           ressourcesHumaines: sae.ressourcesHumaines ?? '',
           dateDebut: sae.dateDebut ?? '',
@@ -167,7 +175,7 @@ export default function AjoutSaeScreen() {
         });
       });
     }
-  }, [editId]);
+  }, [editId, ues, domaines]);
 
   const set = (key: keyof SaeFormData, value: any) =>
     setForm(prev => ({ ...prev, [key]: value }));
@@ -366,7 +374,7 @@ const styles = StyleSheet.create({
   chipActive: { borderColor: Colors.accent, backgroundColor: Colors.accent },
   chipText: { color: Colors.textSecondary, fontSize: 13, fontWeight: '500' },
   chipTextActive: { color: Colors.surface, fontWeight: '600' },
-  submitBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, backgroundColor: Colors.textPrimary, borderRadius: 10, paddingVertical: 15, marginTop: 8 },
+  submitBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, backgroundColor: Colors.accent, borderRadius: 10, paddingVertical: 15, marginTop: 8 },
   submitDisabled: { opacity: 0.5 },
   submitText: { color: Colors.surface, fontSize: 15, fontWeight: '600' },
 });

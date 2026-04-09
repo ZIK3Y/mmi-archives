@@ -17,19 +17,22 @@ export interface Competence {
   libelle: string;
 }
 
+export interface Image {
+  idImage: number;
+  url: string;
+  legende: string;
+  ordre: number;
+}
+
 export interface Groupe {
   idGroupe: number;
   nomGroupe: string;
   membres: string[];
   anneePromo: string;
   note: number;
-}
-
-export interface Image {
-  idImage: number;
-  url: string;
-  legende: string;
-  ordre: number;
+  lienSite: string;
+  lienProduction: string;
+  images: Image[];
 }
 
 export interface Sae {
@@ -55,18 +58,30 @@ export interface Sae {
 export interface SaeFormData {
   titre: string;
   description: string;
-  semestre: string;
-  annee: string;
-  domaine: string;
-  competences: string;
+  anneePromo: string;
+  domaineId: number | null;
+  ueIds: number[];
+  competenceIds: number[];
   ressourcesHumaines: string;
   dateDebut: string;
   dateFin: string;
-  note: number;
-  tauxReussite: number;
-  ue: string;
   lienSite: string;
   lienProduction: string;
+}
+
+export interface GroupeWorkFormData {
+  idSae: number | null;
+  nomGroupe: string;
+  anneePromo: string;
+  etudiant1: string;
+  etudiant2: string;
+  etudiant3: string;
+  etudiant4: string;
+  etudiant5: string;
+  note: string;
+  lienSite: string;
+  lienProduction: string;
+  images: { url: string; legende: string; ordre: number }[];
 }
 
 export interface AuthUser {

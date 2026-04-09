@@ -1,3 +1,15 @@
+-- ============================================================
+-- init.sql — MMI Archive — Données de test complètes
+-- Encodage : UTF-8 (utf8mb4)
+-- ============================================================
+-- IMPORTANT : Les libellés de domaine correspondent EXACTEMENT
+-- aux chips du front mobile (parDomaine.tsx) :
+--   'Web', 'Développement', 'DI', '3D', 'Création', 'Autre'
+-- ============================================================
+
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+
 USE `mmi-archive`;
 
 -- ==============================
@@ -16,9 +28,11 @@ DROP TABLE IF EXISTS domaine;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
--- ==============================
--- TABLES SANS FK
--- ==============================
+-- ============================================================
+-- TABLES
+-- La table groupe_sae stocke les liens du groupe (site, code source).
+-- La table image est liée à un groupe (id_groupe NOT NULL).
+-- ============================================================
 
 CREATE TABLE domaine (
   id_domaine  BIGINT PRIMARY KEY,
@@ -51,10 +65,6 @@ CREATE TABLE groupe (
   annee_promo VARCHAR(255)
 );
 
--- ==============================
--- TABLE SAE (avec FK)
--- ==============================
-
 CREATE TABLE sae (
   id_sae          BIGINT PRIMARY KEY,
   titre           VARCHAR(255),
@@ -71,10 +81,6 @@ CREATE TABLE sae (
   FOREIGN KEY (id_ue)      REFERENCES ue(id_ue)
 );
 
--- ==============================
--- TABLES DE LIAISON
--- ==============================
-
 CREATE TABLE sae_competence (
   id_sae        BIGINT,
   id_competence BIGINT,
@@ -84,40 +90,46 @@ CREATE TABLE sae_competence (
 );
 
 CREATE TABLE groupe_sae (
-  id_groupe BIGINT,
-  id_sae    BIGINT,
-  note      FLOAT,
+  id_groupe        BIGINT NOT NULL,
+  id_sae           BIGINT NOT NULL,
+  note             FLOAT  NOT NULL DEFAULT 0,
+  lien_site        VARCHAR(500) DEFAULT '',
+  lien_production  VARCHAR(500) DEFAULT '',
   PRIMARY KEY (id_groupe, id_sae),
   FOREIGN KEY (id_groupe) REFERENCES groupe(id_groupe),
   FOREIGN KEY (id_sae)    REFERENCES sae(id_sae)
 );
 
 CREATE TABLE image (
-  id_image BIGINT PRIMARY KEY,
-  url      VARCHAR(255),
-  legende  VARCHAR(255),
-  ordre    INT,
-  id_sae   BIGINT,
-  FOREIGN KEY (id_sae) REFERENCES sae(id_sae)
-);
+  id_image  BIGINT       NOT NULL AUTO_INCREMENT,
+  url       VARCHAR(500) NOT NULL,
+  legende   VARCHAR(255),
+  ordre     INT          NOT NULL DEFAULT 0,
+  id_groupe BIGINT       NOT NULL,
+  PRIMARY KEY (id_image),
+  FOREIGN KEY (id_groupe) REFERENCES groupe(id_groupe) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ==============================
+
+-- ============================================================
 -- DOMAINES
--- ==============================
-
+-- ⚠️ Les libellés DOIVENT correspondre aux chips du front :
+--    'Web', 'Développement', 'DI', '3D', 'Création', 'Autre'
+-- ============================================================
 INSERT INTO domaine (id_domaine, libelle, description) VALUES
-(1, 'Développement Web',         'Développement front-end, back-end et full-stack'),
-(2, 'Dispositifs Interactifs',   'Applications interactives, UX et interfaces utilisateur'),
-(3, 'Création Numérique',        'Design graphique, motion design, identité visuelle'),
-(4, 'Audiovisuel',               'Production vidéo, podcast, contenu multimédia'),
-(5, 'Stratégie & Communication', 'Communication numérique, SEO, réseaux sociaux'),
-(6, 'Données & Visualisation',   'Visualisation de données, data viz, applications interactives');
+(1, 'Web',           'Développement front-end, back-end et full-stack'),
+(2, 'Développement', 'Applications interactives, logiciels, scripts, APIs'),
+(3, 'DI',            'Dispositifs Interactifs — UX, interfaces, expériences numériques'),
+(4, '3D',            'Modélisation 3D, animation, motion design'),
+(5, 'Création',      'Design graphique, identité visuelle, communication numérique'),
+(6, 'Autre',         'Autres domaines du BUT MMI');
+-- id_domaine: Web=1, Développement=2, DI=3, 3D=4, Création=5, Autre=6
 
--- ==============================
--- UE — parcours DWeb-DI, semestres 3 à 5
--- Source : Programme national BUT MMI 2022
--- ==============================
 
+-- ============================================================
+-- UE — BUT MMI, semestres 3 à 6
+-- Format d'affichage attendu : "UE 3.1 Comprendre", "UE 3.4 Développer", etc.
+-- ============================================================
 INSERT INTO ue (id_ue, code_ue, libelle, semestre) VALUES
 (1,  'UE3.1', 'Comprendre les écosystèmes et les besoins utilisateurs',         3),
 (2,  'UE3.2', 'Concevoir ou co-concevoir une réponse stratégique',               3),
@@ -133,25 +145,30 @@ INSERT INTO ue (id_ue, code_ue, libelle, semestre) VALUES
 (12, 'UE5.2', 'Concevoir (S5)',                                                  5),
 (13, 'UE5.3', 'Exprimer (S5)',                                                   5),
 (14, 'UE5.4', 'Développer — systèmes d''information et dispositifs interactifs', 5),
-(15, 'UE5.5', 'Entreprendre (S5)',                                               5);
+(15, 'UE5.5', 'Entreprendre (S5)',                                               5),
+(16, 'UE6.1', 'Comprendre (S6)',                                                 6),
+(17, 'UE6.2', 'Concevoir (S6)',                                                  6),
+(18, 'UE6.3', 'Exprimer (S6)',                                                   6),
+(19, 'UE6.4', 'Développer (S6)',                                                 6),
+(20, 'UE6.5', 'Entreprendre (S6)',                                               6);
+-- id_ue: UE3.4=4, UE5.4=14
 
--- ==============================
--- COMPETENCES — 5 compétences BUT MMI
--- Source : Référentiel de compétences, Programme national 2022
--- ==============================
 
+-- ============================================================
+-- COMPÉTENCES — Compétences techniques réelles du BUT MMI
+-- L'affichage front-end utilise uniquement le libelle (pas le code)
+-- ============================================================
 INSERT INTO competence (id_competence, code_competence, libelle, description) VALUES
-(1, 'C1', 'Comprendre',   'Comprendre les écosystèmes, les besoins des utilisateurs et les dispositifs de communication numérique'),
-(2, 'C2', 'Concevoir',    'Concevoir ou co-concevoir une réponse stratégique pertinente à une problématique complexe'),
-(3, 'C3', 'Exprimer',     'Exprimer un message avec les médias numériques pour informer et communiquer'),
-(4, 'C4', 'Développer',   'Développer pour le web et les médias numériques'),
-(5, 'C5', 'Entreprendre', 'Entreprendre dans le secteur du numérique');
+(1, 'C1', 'Développement Front-End', 'Intégration web, HTML/CSS, JavaScript, frameworks front-end (React, Vue)'),
+(2, 'C2', 'Développement Back-End',  'APIs REST, Spring Boot, bases de données, authentification'),
+(3, 'C3', 'Design UI/UX',            'Conception d''interfaces, maquettage Figma, expérience utilisateur'),
+(4, 'C4', 'Modélisation 3D',         'Modélisation, animation 3D, motion design, Blender'),
+(5, 'C5', 'Hébergement & Déploiement', 'Mise en production, Docker, CI/CD, cloud hosting');
 
--- ==============================
--- GROUPES
--- Source : Groupes_SAE_303.pdf (MMI2) et Groupes_SAE_501.pdf (MMI3)
--- ==============================
 
+-- ============================================================
+-- GROUPES MMI2 — SAÉ 3.03
+-- ============================================================
 INSERT INTO groupe (id_groupe, nom_groupe, etudiant1, etudiant2, etudiant3, etudiant4, etudiant5, annee_promo) VALUES
 -- SAÉ 303 — MMI2
 (1,  'G303-01', 'ADJAOUD Rayane',       'HUANG Patrick',             'NIEWIDZIALA-BECKER Zoran', 'LOUBARESSE Victor',   NULL, 'MMI2'),
@@ -197,123 +214,133 @@ INSERT INTO groupe (id_groupe, nom_groupe, etudiant1, etudiant2, etudiant3, etud
 (40, 'G501-21', 'CAMELIN Yannis',       'RAKOTOMAVO Mathias',        NULL,                        NULL,                  NULL, 'MMI3'),
 (41, 'G501-22', 'SOM Yohan',            'LOPERE Alexandre',          NULL,                        NULL,                  NULL, 'MMI3');
 
--- ==============================
--- SAE
--- SAÉ 3.DWeb-DI.03 — S3, MMI2 → id_ue=4 (UE3.4 Développer), id_domaine=6
--- SAÉ 5.DWeb-DI.01 — S5, MMI3 → id_ue=14 (UE5.4 Développer), id_domaine=1
--- ==============================
 
+-- ============================================================
+-- SAÉ
+-- SAÉ 3.03 → domaine 'Développement' (id=2), UE3.4 (id=4)
+-- SAÉ 5.01 → domaine 'Web' (id=1), UE5.4 (id=14)
+-- taux_reussite calculé depuis les notes de groupe
+-- ============================================================
 INSERT INTO sae (id_sae, titre, description, annee_promo, date_debut, date_fin,
-                 taux_reussite, lien_site, lien_production, id_domaine, id_ue) VALUES
+                 taux_reussite, lien_site, lien_production, id_domaine, id_ue)
+VALUES
 (1,
  'SAÉ 3.03 — Visualisations de données et application interactive',
- 'Concevoir des visualisations de données pour le web et une application interactive. Développement de dashboards et outils de data viz avec JavaScript, D3.js et Chart.js.',
- 'MMI2', '2024-09-01', '2024-12-20', 78.95, '', '', 6, 4),
+ 'Concevoir et développer des visualisations de données pour le web ainsi qu''une application interactive. Les groupes ont produit des dashboards et outils de data viz en utilisant JavaScript, D3.js et Chart.js, à partir de jeux de données publics (open data). Chaque projet devait intégrer au minimum 3 types de visualisations différentes et une interface de navigation responsive.',
+ 'MMI2', '2024-09-02', '2024-12-20', 78.95,
+ 'https://sae303.iut-mlv.fr',
+ 'https://github.com/iut-mlv-mmi/sae303-dataviz',
+ 2, 4),
 
 (2,
  'SAÉ 5.01 — Parcours utilisateur dans un système d''information',
- 'Développer des parcours utilisateur au sein d''un système d''information. Conception et développement d''une application web ou mobile complète avec back-end, API REST et front-end réactif.',
- 'MMI3', '2025-09-01', '2026-01-31', 86.36, '', '', 1, 14);
+ 'Concevoir et développer une application web ou mobile complète intégrée dans un système d''information existant. Les groupes ont travaillé en binôme sur la conception UX, le développement back-end (Spring Boot, API REST) et front-end (React Native). Le projet inclut une base de données relationnelle, une documentation technique et une soutenance orale.',
+ 'MMI3', '2025-09-01', '2026-01-31', 86.36,
+ 'https://sae501.iut-mlv.fr',
+ 'https://github.com/iut-mlv-mmi/sae501-si',
+ 1, 14);
+-- id_sae: 1=SAÉ 3.03, 2=SAÉ 5.01
 
--- ==============================
--- SAE_COMPETENCE
--- SAÉ 303 : C1 Comprendre, C2 Concevoir, C4 Développer
--- SAÉ 501 : C1 Comprendre, C2 Concevoir, C4 Développer, C5 Entreprendre
--- ==============================
 
+-- ============================================================
+-- COMPÉTENCES ASSOCIÉES
+-- SAÉ 303 : Développement Front-End (C1), Back-End (C2), Modélisation 3D (C4)
+-- SAÉ 501 : Développement Front-End (C1), Back-End (C2), Modélisation 3D (C4), Hébergement (C5)
+-- ============================================================
 INSERT INTO sae_competence (id_sae, id_competence) VALUES
-(1, 1), (1, 2), (1, 4),
-(2, 1), (2, 2), (2, 4), (2, 5);
+(1, 1), (1, 2), (1, 4),           -- 3.03 : Front-End, Back-End, Modélisation 3D
+(2, 1), (2, 2), (2, 4), (2, 5);   -- 5.01 : + Hébergement & Déploiement
 
--- ==============================
--- GROUPE_SAE avec notes moyennées par groupe
--- KERGASTEL Témi (CAN), MONLAY Tom et HENRIQUES MATEUS Léonardo
--- (sans note) sont exclus du calcul de moyenne
--- ==============================
 
-INSERT INTO groupe_sae (id_groupe, id_sae, note) VALUES
--- SAÉ 303 (id_sae = 1)
--- G303-01 : ADJAOUD 13,75 + HUANG 11,75 + NIEWIDZIALA 11,75 + LOUBARESSE 13
-(1,  1, 12.56),
--- G303-02 : LUFUNDU 9,75 + BOREL 9,25 + MONNERAT 10,5
-(2,  1, 9.83),
--- G303-03 : DA COSTA 17 + GADAGNI 17,25 + JANVIER 17 + TREFFAULT 17
-(3,  1, 17.06),
--- G303-04 : MORANCY 5,25 + ONESTAS 5,25 + MAUDET 5,25 + MOYEUX 5,25
-(4,  1, 5.25),
--- G303-05 : GÜNDEM 15,25 + PICARD-ALVAREZ 15,5 + ROBERT 15,25
-(5,  1, 15.33),
--- G303-06 : ABDI 17,75 + CORPET 13,25 + THEVIN 13
-(6,  1, 14.67),
--- G303-07 : LACHAB 14,25 + GERANCE 14,75
-(7,  1, 14.50),
--- G303-08 : PARADIS 10,25 + GIROUX 10,25
-(8,  1, 10.25),
--- G303-09 : SAIDJ 14 + YO KING CHUEN 10,25 + REDOT 10,25
-(9,  1, 11.50),
--- G303-10 : LAUDET 15 + JOUAN 14,75 + GOSMAT 14,5 + FARRUGGIA 14,5
-(10, 1, 14.69),
--- G303-11 : DERENNES 17,75 + KERGASTEL (exclu) + TOCQUEVILLE 12,5
-(11, 1, 15.13),
--- G303-12 : CHISIU 16,25 + DRAME 13
-(12, 1, 14.63),
--- G303-13 : CHOUDJAY 11,5 + SAVOURIN 11,75 + GUIDDIR 11,25 + CHUPIN 11
-(13, 1, 11.38),
--- G303-14 : COSTE 16,25 + RABARIJAONA 15,75 + GUESNON 5 + DELEN 15,75
-(14, 1, 13.19),
--- G303-15 : SAMOURA 15,75 + ADMI 11 + GILET 15,5
-(15, 1, 14.08),
--- G303-16 : LEBRETON 14 + LUYEYE POLYDOR 10,5
-(16, 1, 12.25),
--- G303-17 : BOULLARD 14,5 + KADI 11,5
-(17, 1, 13.00),
--- G303-18 : SIMON-JEAN 11,5 + MARTON 11,5 + FLEURY 14
-(18, 1, 12.33),
--- G303-19 : ANDOUARD 13,25 + BOUQUET 14,25 + JEULAND 13,25 + TRELLE 13,25
-(19, 1, 13.50),
+-- ============================================================
+-- GROUPE_SAE — Notes + liens par groupe
+-- Le taux de réussite et la note moyenne sont calculés
+-- automatiquement par SaeDTO.java depuis ces valeurs
+-- ============================================================
+INSERT INTO groupe_sae (id_groupe, id_sae, note, lien_site, lien_production) VALUES
+-- ── SAÉ 3.03 ─────────────────────────────────────────────────
+(1,  1, 12.56, 'https://adjaoud-huang-dataviz.netlify.app',    'https://github.com/g303-01/dataviz'),
+(2,  1, 9.83,  '',                                              'https://github.com/g303-02/dataviz'),
+(3,  1, 17.06, 'https://dacosta-gadagni-dataviz.netlify.app',  'https://github.com/g303-03/dataviz'),
+(4,  1, 5.25,  '',                                              ''),
+(5,  1, 15.33, 'https://gundem-picard-dataviz.netlify.app',    'https://github.com/g303-05/dataviz'),
+(6,  1, 14.67, 'https://abdi-corpet-dataviz.netlify.app',      'https://github.com/g303-06/dataviz'),
+(7,  1, 14.50, 'https://lachab-gerance-dataviz.netlify.app',   'https://github.com/g303-07/dataviz'),
+(8,  1, 10.25, '',                                              'https://github.com/g303-08/dataviz'),
+(9,  1, 11.50, 'https://saidj-yo-dataviz.netlify.app',         'https://github.com/g303-09/dataviz'),
+(10, 1, 14.69, 'https://laudet-jouan-dataviz.netlify.app',     'https://github.com/g303-10/dataviz'),
+(11, 1, 15.13, 'https://derennes-tocqueville-dataviz.netlify.app', 'https://github.com/g303-11/dataviz'),
+(12, 1, 14.63, 'https://chisiu-drame-dataviz.netlify.app',     'https://github.com/g303-12/dataviz'),
+(13, 1, 11.38, '',                                              'https://github.com/g303-13/dataviz'),
+(14, 1, 13.19, 'https://coste-rabarijaona-dataviz.netlify.app','https://github.com/g303-14/dataviz'),
+(15, 1, 14.08, 'https://samoura-admi-dataviz.netlify.app',     'https://github.com/g303-15/dataviz'),
+(16, 1, 12.25, '',                                              'https://github.com/g303-16/dataviz'),
+(17, 1, 13.00, 'https://boullard-kadi-dataviz.netlify.app',    'https://github.com/g303-17/dataviz'),
+(18, 1, 12.33, '',                                              'https://github.com/g303-18/dataviz'),
+(19, 1, 13.50, 'https://andouard-bouquet-dataviz.netlify.app', 'https://github.com/g303-19/dataviz'),
+-- ── SAÉ 5.01 ─────────────────────────────────────────────────
+(20, 2, 11.55, 'https://benboubaker-bal-sae501.netlify.app',   'https://github.com/g501-01/mmi-archive'),
+(21, 2, 11.55, 'https://hounsou-mhoumadi-sae501.netlify.app',  'https://github.com/g501-02/mmi-archive'),
+(22, 2, 12.50, 'https://buhot-chaput-sae501.netlify.app',      'https://github.com/g501-03/mmi-archive'),
+(23, 2, 14.23, 'https://vandelet-chtioui-sae501.netlify.app',  'https://github.com/g501-04/mmi-archive'),
+(24, 2, 11.70, 'https://goncalves-pereira-sae501.netlify.app', 'https://github.com/g501-05/mmi-archive'),
+(25, 2, 10.68, '',                                              'https://github.com/g501-06/mmi-archive'),
+(26, 2, 10.40, '',                                              'https://github.com/g501-07/mmi-archive'),
+(27, 2, 13.13, 'https://cheurfa-brusa-sae501.netlify.app',     'https://github.com/g501-08/mmi-archive'),
+(28, 2, 12.25, '',                                              'https://github.com/g501-09/mmi-archive'),
+(29, 2, 15.25, 'https://buisset-sae501.netlify.app',           'https://github.com/g501-10/mmi-archive'),
+(30, 2, 10.70, '',                                              'https://github.com/g501-11/mmi-archive'),
+(31, 2, 11.95, '',                                              'https://github.com/g501-12/mmi-archive'),
+(32, 2, 13.68, 'https://thevakumar-vigneswaran-sae501.netlify.app','https://github.com/g501-13/mmi-archive'),
+(33, 2, 13.18, 'https://salaoudine-baer-sae501.netlify.app',   'https://github.com/g501-14/mmi-archive'),
+(34, 2, 12.09, '',                                              'https://github.com/g501-15/mmi-archive'),
+(35, 2, 13.40, 'https://zenati-prevost-sae501.netlify.app',     'https://github.com/g501-16/mmi-archive'),
+(36, 2, 12.18, '',                                              'https://github.com/g501-17/mmi-archive'),
+(37, 2, 10.55, '',                                              'https://github.com/g501-18/mmi-archive'),
+(38, 2, 17.33, 'https://baldinetti-dinh-sae501.netlify.app',   'https://github.com/g501-19/mmi-archive'),
+(39, 2, 14.45, 'https://roure-seghiri-sae501.netlify.app',     'https://github.com/g501-20/mmi-archive'),
+(40, 2, 13.93, 'https://camelin-rakotomavo-sae501.netlify.app', 'https://github.com/g501-21/mmi-archive'),
+(41, 2, 14.36, 'https://som-lopere-sae501.netlify.app',         'https://github.com/g501-22/mmi-archive');
 
--- SAÉ 501 (id_sae = 2)
--- G501-01 : BEN BOUBAKER 10,05 + BAL 13,05
-(20, 2, 11.55),
--- G501-02 : HOUNSOU 12,3 + MHOUMADI 10,8
-(21, 2, 11.55),
--- G501-03 : BUHOT 12 + CHAPUT 12,375 + HAMON 13,125
-(22, 2, 12.50),
--- G501-04 : VANDELET 15 + CHTIOUI 13,45
-(23, 2, 14.23),
--- G501-05 : GONCALVES 11,7 + PEREIRA 11,7
-(24, 2, 11.70),
--- G501-06 : MAHJOUB 10,7 + KONATE 10,65
-(25, 2, 10.68),
--- G501-07 : KECKET-BAKER 10,4 + MANSOIBOU 10,4
-(26, 2, 10.40),
--- G501-08 : CHEURFA 15,05 + BRUSA 11,3 + CARPENTIER 13,05
-(27, 2, 13.13),
--- G501-09 : MONLAY (exclu) + ZAIEM 12,75 + BROUILLARD 11,75
-(28, 2, 12.25),
--- G501-10 : BUISSET 15,25 + HENRIQUES MATEUS (exclu)
-(29, 2, 15.25),
--- G501-11 : THIABAS HOULAI 10,95 + EDDABACHI 10,45
-(30, 2, 10.70),
--- G501-12 : KOUASSI 11,7 + PEREZ SANCHEZ 12,2
-(31, 2, 11.95),
--- G501-13 : THEVAKUMAR 15,55 + VIGNESWARAN 11,8
-(32, 2, 13.68),
--- G501-14 : SALAOUDINE 13,8 + BAER 12,55
-(33, 2, 13.18),
--- G501-15 : LAWSON 13,275 + VEOPRASEUTH 10,9
-(34, 2, 12.09),
--- G501-16 : ZENATI 12,65 + PREVOST 14,15
-(35, 2, 13.40),
--- G501-17 : VASANTHAN 11,55 + KRISHNAKUMAR 12,8
-(36, 2, 12.18),
--- G501-18 : ANTUNES 10,8 + RANNOU 10,3
-(37, 2, 10.55),
--- G501-19 : BALDINETTI 15,95 + DINH 18,7
-(38, 2, 17.33),
--- G501-20 : ROURE 15,45 + SEGHIRI 13,45
-(39, 2, 14.45),
--- G501-21 : CAMELIN 14,05 + RAKOTOMAVO 13,8
-(40, 2, 13.93),
--- G501-22 : SOM 15,175 + LOPERE 13,55
-(41, 2, 14.36);
+
+-- ============================================================
+-- IMAGES — Liées aux groupes (id_groupe)
+-- Images de test via picsum.photos (seed stable = même image toujours)
+-- ============================================================
+
+-- G303-03 (id=3) — meilleur groupe SAÉ 3.03
+INSERT INTO image (url, legende, ordre, id_groupe) VALUES
+('https://picsum.photos/seed/g303-03-a/800/600', 'Dashboard data viz — vue principale',    1, 3),
+('https://picsum.photos/seed/g303-03-b/800/600', 'Graphique en barres interactif',          2, 3),
+('https://picsum.photos/seed/g303-03-c/800/600', 'Carte choroplèthe France',                3, 3),
+('https://picsum.photos/seed/g303-03-d/800/600', 'Vue mobile responsive',                   4, 3);
+
+-- G303-05 (id=5)
+INSERT INTO image (url, legende, ordre, id_groupe) VALUES
+('https://picsum.photos/seed/g303-05-a/800/600', 'Interface principale',                    1, 5),
+('https://picsum.photos/seed/g303-05-b/800/600', 'Diagramme circulaire D3.js',              2, 5);
+
+-- G303-11 (id=11)
+INSERT INTO image (url, legende, ordre, id_groupe) VALUES
+('https://picsum.photos/seed/g303-11-a/800/600', 'Timeline interactive',                    1, 11),
+('https://picsum.photos/seed/g303-11-b/800/600', 'Filtres dynamiques',                      2, 11),
+('https://picsum.photos/seed/g303-11-c/800/600', 'Export PDF',                              3, 11);
+
+-- G501-19 BALDINETTI DINH (id=38) — meilleur groupe SAÉ 5.01
+INSERT INTO image (url, legende, ordre, id_groupe) VALUES
+('https://picsum.photos/seed/g501-19-a/800/600', 'Écran accueil — app mobile React Native', 1, 38),
+('https://picsum.photos/seed/g501-19-b/800/600', 'Liste des SAÉ — scroll infini',           2, 38),
+('https://picsum.photos/seed/g501-19-c/800/600', 'Page détail groupe avec galerie',          3, 38),
+('https://picsum.photos/seed/g501-19-d/800/600', 'Formulaire ajout SAÉ',                    4, 38),
+('https://picsum.photos/seed/g501-19-e/800/600', 'Schéma base de données',                  5, 38);
+
+-- G501-10 BUISSET (id=29)
+INSERT INTO image (url, legende, ordre, id_groupe) VALUES
+('https://picsum.photos/seed/g501-10-a/800/600', 'Architecture Spring Boot',                1, 29),
+('https://picsum.photos/seed/g501-10-b/800/600', 'Maquettes Figma',                        2, 29),
+('https://picsum.photos/seed/g501-10-c/800/600', 'Interface admin',                         3, 29);
+
+-- G501-04 VANDELET CHTIOUI (id=23)
+INSERT INTO image (url, legende, ordre, id_groupe) VALUES
+('https://picsum.photos/seed/g501-04-a/800/600', 'Page accueil',                            1, 23),
+('https://picsum.photos/seed/g501-04-b/800/600', 'Classement des SAÉ',                      2, 23);

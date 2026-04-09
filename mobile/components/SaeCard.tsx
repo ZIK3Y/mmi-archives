@@ -1,9 +1,4 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Sae } from '@/types/types';
 import { Colors } from '@/constants/Colors';
@@ -14,17 +9,25 @@ interface SaeCardProps {
   sae: Sae;
   showRank?: boolean;
   rank?: number;
+  isHighest?: boolean;
 }
 
-export function SaeCard({ sae, showRank, rank }: SaeCardProps) {
+export function SaeCard({ sae, showRank, rank, isHighest }: SaeCardProps) {
   const router = useRouter();
 
-  const noteArrondie = parseFloat(sae.note.toFixed(2));
+  const noteColor = isHighest
+    ? Colors.success
+    : sae.note < 10
+    ? Colors.danger
+    : Colors.warning;
 
-  const noteColor =
-    sae.note >= 16 ? Colors.success : sae.note >= 12 ? Colors.warning : Colors.danger;
-  const noteBg =
-    sae.note >= 16 ? Colors.successBg : sae.note >= 12 ? Colors.warningBg : Colors.dangerBg;
+  const noteBg = isHighest
+    ? Colors.successBg
+    : sae.note < 10
+    ? Colors.dangerBg
+    : Colors.warningBg;
+
+  const tauxAffiche = parseFloat(sae.tauxReussite.toFixed(2));
 
   return (
     <TouchableOpacity
@@ -46,7 +49,7 @@ export function SaeCard({ sae, showRank, rank }: SaeCardProps) {
           </View>
         </View>
         <View style={[styles.notePill, { backgroundColor: noteBg }]}>
-          <Text style={[styles.noteText, { color: noteColor }]}>{noteArrondie}/20</Text>
+          <Text style={[styles.noteText, { color: noteColor }]}>{sae.note.toFixed(2)}/20</Text>
         </View>
       </View>
 
@@ -58,7 +61,7 @@ export function SaeCard({ sae, showRank, rank }: SaeCardProps) {
         <DomaineBadge domaine={sae.domaine} />
         <View style={styles.tauxRow}>
           <Feather name="check-circle" size={12} color={Colors.success} />
-          <Text style={styles.taux}>{sae.tauxReussite}%</Text>
+          <Text style={styles.taux}>{tauxAffiche}%</Text>
         </View>
         <Feather name="chevron-right" size={14} color={Colors.accent} style={styles.chevron} />
       </View>
@@ -84,66 +87,16 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     marginBottom: 8,
   },
-  rankText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: Colors.accent,
-  },
-  topRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 8,
-    gap: 10,
-  },
-  titleBlock: {
-    flex: 1,
-    flexDirection: 'row',
-    gap: 8,
-    alignItems: 'flex-start',
-  },
-  title: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: Colors.textPrimary,
-    lineHeight: 21,
-  },
-  meta: {
-    fontSize: 12,
-    color: Colors.textMuted,
-    marginTop: 2,
-  },
-  notePill: {
-    borderRadius: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    alignSelf: 'flex-start',
-  },
-  noteText: {
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  description: {
-    fontSize: 13,
-    color: Colors.textSecondary,
-    lineHeight: 18,
-    marginBottom: 10,
-  },
-  bottomRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  tauxRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  taux: {
-    fontSize: 12,
-    color: Colors.success,
-    fontWeight: '500',
-  },
-  chevron: {
-    marginLeft: 'auto',
-  },
+  rankText: { fontSize: 11, fontWeight: '700', color: Colors.accent },
+  topRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8, gap: 10 },
+  titleBlock: { flex: 1, flexDirection: 'row', gap: 8, alignItems: 'flex-start' },
+  title: { fontSize: 15, fontWeight: '600', color: Colors.textPrimary, lineHeight: 21 },
+  meta: { fontSize: 12, color: Colors.textMuted, marginTop: 2 },
+  notePill: { borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3, alignSelf: 'flex-start' },
+  noteText: { fontSize: 13, fontWeight: '700' },
+  description: { fontSize: 13, color: Colors.textSecondary, lineHeight: 18, marginBottom: 10 },
+  bottomRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  tauxRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  taux: { fontSize: 12, color: Colors.success, fontWeight: '500' },
+  chevron: { marginLeft: 'auto' },
 });

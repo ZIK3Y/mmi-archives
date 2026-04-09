@@ -1,5 +1,5 @@
 import { DOMAINE } from '@/constants/IPServer';
-import { Sae, SaeFormData } from '@/types/types';
+import { Sae, SaeFormData, Ue, Competence, Domaine, GroupeWorkFormData } from '@/types/types';
 
 const handleResponse = async <T>(res: Response): Promise<T | null> => {
   if (!res.ok) return null;
@@ -10,51 +10,42 @@ const handleResponse = async <T>(res: Response): Promise<T | null> => {
   }
 };
 
-// Récupère toutes les SAé
+const authHeaders = (token?: string): Record<string, string> => {
+  const h: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (token) h['Authorization'] = `Bearer ${token}`;
+  return h;
+};
+
+// ── SAÉ ──────────────────────────────────────────────────────
+
 export const fetchAllSae = async (): Promise<Sae[]> => {
   try {
     const res = await fetch(`${DOMAINE}/saes`);
-    const data = await handleResponse<Sae[]>(res);
-    return data ?? [];
-  } catch {
-    return [];
-  }
+    return (await handleResponse<Sae[]>(res)) ?? [];
+  } catch { return []; }
 };
 
-// Récupère une SAé par son id
 export const fetchSaeById = async (id: number | string): Promise<Sae | null> => {
   try {
     const res = await fetch(`${DOMAINE}/saes/${id}`);
     return handleResponse<Sae>(res);
-  } catch {
-    return null;
-  }
+  } catch { return null; }
 };
 
-// Récupère les SAé par année (MMI2 ou MMI3)
 export const fetchSaeByAnnee = async (annee: string): Promise<Sae[]> => {
   try {
     const res = await fetch(`${DOMAINE}/saes/annee/${encodeURIComponent(annee)}`);
-    const data = await handleResponse<Sae[]>(res);
-    return data ?? [];
-  } catch {
-    return [];
-  }
+    return (await handleResponse<Sae[]>(res)) ?? [];
+  } catch { return []; }
 };
 
-// Récupère les SAé par domaine
 export const fetchSaeByDomaine = async (domaine: string): Promise<Sae[]> => {
   try {
     const res = await fetch(`${DOMAINE}/saes/domaine/${encodeURIComponent(domaine)}`);
-    const data = await handleResponse<Sae[]>(res);
-    return data ?? [];
-  } catch {
-    return [];
-  }
+    return (await handleResponse<Sae[]>(res)) ?? [];
+  } catch { return []; }
 };
 
-// Récupère les SAé triées par note (décroissant)
-// Fallback : fetchAllSae + tri local si l'endpoint /classement n'existe pas
 export const fetchSaeByNote = async (): Promise<Sae[]> => {
   try {
     const res = await fetch(`${DOMAINE}/saes/classement`);
@@ -62,7 +53,6 @@ export const fetchSaeByNote = async (): Promise<Sae[]> => {
       const data = await handleResponse<Sae[]>(res);
       if (data && data.length > 0) return data;
     }
-    // Fallback : toutes les SAé triées localement
     const all = await fetchAllSae();
     return [...all].sort((a, b) => b.note - a.note);
   } catch {
@@ -71,36 +61,92 @@ export const fetchSaeByNote = async (): Promise<Sae[]> => {
   }
 };
 
-// Crée une nouvelle SAé (requiert authentification)
-export const createSae = async (
-  data: SaeFormData,
-  token?: string
-): Promise<Sae | null> => {
+export const createSae = async (data: SaeFormData, token?: string): Promise<Sae | null> => {
   try {
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-
     const res = await fetch(`${DOMAINE}/saes`, {
       method: 'POST',
-      headers,
+      headers: authHeaders(token),
       body: JSON.stringify(data),
     });
     if (res.status !== 201 && res.status !== 200) return null;
     return handleResponse<Sae>(res);
-  } catch {
-    return null;
-  }
+  } catch { return null; }
 };
 
-// Récupère toutes les images d'une SAé
+export const updateSae = async (id: number, data: SaeFormData, token?: string): Promise<Sae | null> => {
+  try {
+    const res = await fetch(`${DOMAINE}/saes/${id}`, {
+      method: 'PUT',
+      headers: authHeaders(token),
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) return null;
+    return handleResponse<Sae>(res);
+  } catch { return null; }
+};
+
+export const deleteSae = async (id: number, token?: string): Promise<boolean> => {
+  try {
+    const res = await fetch(`${DOMAINE}/saes/${id}`, {
+      method: 'DELETE',
+      headers: authHeaders(token),
+    });
+    return res.ok;
+  } catch { return false; }
+};
+
+// ── GROUPES ──────────────────────────────────────────────────
+
+export const createGroupeWork = async (data: GroupeWorkFormData, token?: string): Promise<any> => {
+  try {
+    const res = await fetch(`${DOMAINE}/groupes`, {
+      method: 'POST',
+      headers: authHeaders(token),
+      body: JSON.stringify(data),
+    });
+    if (res.status !== 201 && res.status !== 200) return null;
+    return handleResponse<any>(res);
+  } catch { return null; }
+};
+
+export const deleteGroupe = async (idGroupe: number, token?: string): Promise<boolean> => {
+  try {
+    const res = await fetch(`${DOMAINE}/groupes/${idGroupe}`, {
+      method: 'DELETE',
+      headers: authHeaders(token),
+    });
+    return res.ok;
+  } catch { return false; }
+};
+
+// ── RÉFÉRENTIELS ──────────────────────────────────────────────
+
+export const fetchAllUes = async (): Promise<Ue[]> => {
+  try {
+    const res = await fetch(`${DOMAINE}/ues`);
+    return (await handleResponse<Ue[]>(res)) ?? [];
+  } catch { return []; }
+};
+
+export const fetchAllCompetences = async (): Promise<Competence[]> => {
+  try {
+    const res = await fetch(`${DOMAINE}/competences`);
+    return (await handleResponse<Competence[]>(res)) ?? [];
+  } catch { return []; }
+};
+
+export const fetchAllDomaines = async (): Promise<Domaine[]> => {
+  try {
+    const res = await fetch(`${DOMAINE}/domaines`);
+    return (await handleResponse<Domaine[]>(res)) ?? [];
+  } catch { return []; }
+};
+
+// ── IMAGES ────────────────────────────────────────────────────
+
 export const fetchImagesBySae = async (idSae: number | string): Promise<string[]> => {
   try {
     const res = await fetch(`${DOMAINE}/saes/${idSae}/images`);
-    const data = await handleResponse<string[]>(res);
-    return data ?? [];
-  } catch {
-    return [];
-  }
+    return (await handleResponse<string[]>(res)) ?? [];
+  } catch { return []; }
 };

@@ -22,7 +22,7 @@ export default function ParAnneeScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <BackHeader title="SAé par année" />
+      <BackHeader title="SAÉ par année" />
 
       <View style={styles.toggle}>
         {ANNEES.map((a) => (
@@ -42,14 +42,14 @@ export default function ParAnneeScreen() {
       {loading && (
         <View style={styles.centered}>
           <ActivityIndicator size="large" color={Colors.textSecondary} />
-          <Text style={styles.loadingText}>Chargement des SAé {annee}…</Text>
+          <Text style={styles.loadingText}>Chargement des SAÉ {annee}…</Text>
         </View>
       )}
 
       {!loading && error && (
         <View style={styles.centered}>
           <Feather name="wifi-off" size={28} color={Colors.textMuted} />
-          <Text style={styles.errorText}>Impossible de charger les SAé</Text>
+          <Text style={styles.errorText}>Impossible de charger les SAÉ</Text>
           <Text style={styles.errorSub}>Vérifiez la connexion au serveur</Text>
         </View>
       )}
@@ -62,13 +62,13 @@ export default function ParAnneeScreen() {
           contentContainerStyle={styles.list}
           ListHeaderComponent={
             saes.length > 0 ? (
-              <Text style={styles.resultCount}>{saes.length} SAé trouvées</Text>
+              <Text style={styles.resultCount}>{saes.length} SAÉ trouvées</Text>
             ) : null
           }
           ListEmptyComponent={
             <View style={styles.centered}>
               <Feather name="inbox" size={28} color={Colors.textMuted} />
-              <Text style={styles.emptyText}>Aucune SAé pour {annee}</Text>
+              <Text style={styles.emptyText}>Aucune SAÉ pour {annee}</Text>
             </View>
           }
           showsVerticalScrollIndicator={false}

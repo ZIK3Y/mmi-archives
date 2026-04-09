@@ -17,7 +17,7 @@ export default function ClassementScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <BackHeader title="Classement" rightAction={<Text style={styles.count}>{saes.length} SAé</Text>} />
+      <BackHeader title="Classement" rightAction={<Text style={styles.count}>{saes.length} SAÉ</Text>} />
 
       {loading && (
         <View style={styles.centered}>
@@ -50,7 +50,7 @@ export default function ClassementScreen() {
           ListEmptyComponent={
             <View style={styles.centered}>
               <Feather name="inbox" size={32} color={Colors.textMuted} />
-              <Text style={styles.emptyText}>Aucune SAé disponible</Text>
+              <Text style={styles.emptyText}>Aucune SAÉ disponible</Text>
             </View>
           }
           showsVerticalScrollIndicator={false}

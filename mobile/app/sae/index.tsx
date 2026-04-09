@@ -28,7 +28,7 @@ export default function SaeListScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <BackHeader title="SAé" rightAction={<Text style={styles.count}>{saes.length} projets</Text>} />
+      <BackHeader title="SAÉ" rightAction={<Text style={styles.count}>{saes.length} projets</Text>} />
 
       <View style={styles.searchWrapper}>
         <Feather name="search" size={16} color={Colors.textMuted} style={styles.searchIcon} />
@@ -56,7 +56,7 @@ export default function SaeListScreen() {
       {error && (
         <View style={styles.centered}>
           <Feather name="wifi-off" size={32} color={Colors.textMuted} />
-          <Text style={styles.errorText}>Impossible de charger les SAé</Text>
+          <Text style={styles.errorText}>Impossible de charger les SAÉ</Text>
           <Text style={styles.errorSub}>Vérifiez la connexion au serveur</Text>
         </View>
       )}
@@ -70,7 +70,7 @@ export default function SaeListScreen() {
           ListEmptyComponent={
             <View style={styles.centered}>
               <Feather name="inbox" size={32} color={Colors.textMuted} />
-              <Text style={styles.emptyText}>Aucune SAé trouvée</Text>
+              <Text style={styles.emptyText}>Aucune SAÉ trouvée</Text>
             </View>
           }
           showsVerticalScrollIndicator={false}
